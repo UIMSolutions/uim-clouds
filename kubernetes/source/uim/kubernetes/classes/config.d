@@ -1,5 +1,8 @@
 module uim.kubernetes.classes.config;
 
+import uim.kubernetes;
+
+@safe:
 // ConfigMap resource
 struct ConfigMap {
   KubernetesResource resource;

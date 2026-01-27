@@ -3,11 +3,9 @@
 * License: Subject to the terms of the Apache 2.0 license, as written in the included LICENSE.txt file.
 * Authors: Ozan Nurettin Süel (aka UIManufaktur)
 *****************************************************************************************************************/
-module uim.kubernetes.helpers;
+module uim.kubernetes.helpers.helpers;
 
-import std.exception : enforce;
-import std.format : format;
-import std.json : Json;
+import uim.kubernetes;
 
 @safe:
 

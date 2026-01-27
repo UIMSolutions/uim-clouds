@@ -1,5 +1,8 @@
 module uim.kubernetes.classes.deployment;
 
+import uim.kubernetes;
+
+@safe:
 // Deployment resource
 struct Deployment {
   KubernetesResource resource;

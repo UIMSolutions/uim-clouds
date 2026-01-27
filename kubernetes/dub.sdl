@@ -11,9 +11,7 @@ targetName "uim-kubernetes"
 targetType "library"
 
 // Dependencies
-dependency "uim-framework:core" version="*"
-dependency "uim-framework:logging" version="*"
-dependency "vibe-d" version="~>0.10.3"
+dependency "uim-framework" version="~>26.1.4"
 
 // Configurations
 configuration "default" {
