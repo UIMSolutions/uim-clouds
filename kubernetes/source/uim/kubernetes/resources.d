@@ -5,11 +5,11 @@
 *****************************************************************************************************************/
 module uim.kubernetes.resources;
 
-import std.json : JSONValue, JSONType;
+import std.json : Json, JSONType;
 
 // Common Kubernetes resource wrapper
 struct KubernetesResource {
-  JSONValue data;
+  Json data;
 
   string name() const @trusted {
     if (auto meta = "metadata" in data.object) {
@@ -43,25 +43,25 @@ struct KubernetesResource {
     return "v1";
   }
 
-  JSONValue metadata() const @trusted {
+  Json metadata() const @trusted {
     if (auto m = "metadata" in data.object) {
       return *m;
     }
-    return JSONValue.object;
+    return Json.object;
   }
 
-  JSONValue spec() const @trusted {
+  Json spec() const @trusted {
     if (auto s = "spec" in data.object) {
       return *s;
     }
-    return JSONValue.object;
+    return Json.object;
   }
 
-  JSONValue status() const @trusted {
+  Json status() const @trusted {
     if (auto st = "status" in data.object) {
       return *st;
     }
-    return JSONValue.object;
+    return Json.object;
   }
 }
 
@@ -77,11 +77,11 @@ struct Pod {
     return resource.namespace_();
   }
 
-  JSONValue spec() const {
+  Json spec() const {
     return resource.spec();
   }
 
-  JSONValue status() const {
+  Json status() const {
     return resource.status();
   }
 
@@ -92,9 +92,9 @@ struct Pod {
     return "Unknown";
   }
 
-  JSONValue[] containerStatuses() const @trusted {
+  Json[] containerStatuses() const @trusted {
     if (auto cs = "containerStatuses" in status().object) {
-      if (cs.type == JSONValue.Type.array) {
+      if (cs.type == Json.Type.array) {
         return cs.array;
       }
     }
@@ -114,17 +114,17 @@ struct Deployment {
     return resource.namespace_();
   }
 
-  JSONValue spec() const {
+  Json spec() const {
     return resource.spec();
   }
 
-  JSONValue status() const {
+  Json status() const {
     return resource.status();
   }
 
   size_t desiredReplicas() const @trusted {
     if (auto r = "replicas" in spec().object) {
-      if (r.type == JSONValue.Type.integer) {
+      if (r.type == Json.Type.integer) {
         return cast(size_t) r.integer;
       }
     }
@@ -133,7 +133,7 @@ struct Deployment {
 
   size_t readyReplicas() const @trusted {
     if (auto rr = "readyReplicas" in status().object) {
-      if (rr.type == JSONValue.Type.integer) {
+      if (rr.type == Json.Type.integer) {
         return cast(size_t) rr.integer;
       }
     }
@@ -142,7 +142,7 @@ struct Deployment {
 
   size_t updatedReplicas() const @trusted {
     if (auto ur = "updatedReplicas" in status().object) {
-      if (ur.type == JSONValue.Type.integer) {
+      if (ur.type == Json.Type.integer) {
         return cast(size_t) ur.integer;
       }
     }
@@ -162,7 +162,7 @@ struct Service {
     return resource.namespace_();
   }
 
-  JSONValue spec() const {
+  Json spec() const {
     return resource.spec();
   }
 
@@ -173,9 +173,9 @@ struct Service {
     return "ClusterIP";
   }
 
-  JSONValue[] ports() const @trusted {
+  Json[] ports() const @trusted {
     if (auto p = "ports" in spec().object) {
-      if (p.type == JSONValue.Type.array) {
+      if (p.type == Json.Type.array) {
         return p.array;
       }
     }
@@ -195,11 +195,11 @@ struct ConfigMap {
     return resource.namespace_();
   }
 
-  JSONValue data() const @trusted {
+  Json data() const @trusted {
     if (auto d = "data" in resource.data.object) {
       return *d;
     }
-    return JSONValue.object;
+    return Json.object;
   }
 
   string get(string key) const @trusted {

@@ -5,7 +5,7 @@
 *****************************************************************************************************************/
 module uim.lxc.resources;
 
-import std.json : JSONValue;
+import std.json : Json;
 
 @safe:
 
@@ -18,9 +18,9 @@ struct Container {
   long lastUsed;
   string[] devices;
   string[string] config;
-  JSONValue expandedConfig;
+  Json expandedConfig;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto name = "name" in data.object) {
       this.name = name.str;
     }
@@ -28,7 +28,7 @@ struct Container {
       this.status = status.str;
     }
     if (auto ephemeral = "ephemeral" in data.object) {
-      this.ephemeral = ephemeral.type == JSONValue.Type.true_;
+      this.ephemeral = ephemeral.type == Json.Type.true_;
     }
     if (auto created = "created" in data.object) {
       this.created = created.integer;
@@ -36,7 +36,7 @@ struct Container {
     if (auto lastUsed = "last_used_at" in data.object) {
       this.lastUsed = lastUsed.integer;
     }
-    if (auto config = "config" in data.object && config.type == JSONValue.Type.object) {
+    if (auto config = "config" in data.object && config.type == Json.Type.object) {
       foreach (key, value; config.object) {
         this.config[key] = value.str;
       }
@@ -56,7 +56,7 @@ struct ContainerState {
   long memoryLimit;
   string[string] processes;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto name = "name" in data.object) {
       this.name = name.str;
     }
@@ -81,9 +81,9 @@ struct Image {
   string properties;
   long size;
   string type;
-  JSONValue metadata;
+  Json metadata;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto name = "name" in data.object) {
       this.name = name.str;
     }
@@ -105,21 +105,21 @@ struct Network {
   string type;
   string[] members;
   string[string] config;
-  JSONValue expandedConfig;
+  Json expandedConfig;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto name = "name" in data.object) {
       this.name = name.str;
     }
     if (auto type = "type" in data.object) {
       this.type = type.str;
     }
-    if (auto members = "members" in data.object && members.type == JSONValue.Type.array) {
+    if (auto members = "members" in data.object && members.type == Json.Type.array) {
       foreach (member; members.array) {
         this.members ~= member.str;
       }
     }
-    if (auto config = "config" in data.object && config.type == JSONValue.Type.object) {
+    if (auto config = "config" in data.object && config.type == Json.Type.object) {
       foreach (key, value; config.object) {
         this.config[key] = value.str;
       }
@@ -136,7 +136,7 @@ struct StoragePool {
   long totalSpace;
   string[string] config;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto name = "name" in data.object) {
       this.name = name.str;
     }
@@ -146,7 +146,7 @@ struct StoragePool {
     if (auto source = "source" in data.object) {
       this.source = source.str;
     }
-    if (auto config = "config" in data.object && config.type == JSONValue.Type.object) {
+    if (auto config = "config" in data.object && config.type == Json.Type.object) {
       foreach (key, value; config.object) {
         this.config[key] = value.str;
       }
@@ -162,14 +162,14 @@ struct StorageVolume {
   long size;
   string[string] config;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto name = "name" in data.object) {
       this.name = name.str;
     }
     if (auto volumeType = "type" in data.object) {
       this.volumeType = volumeType.str;
     }
-    if (auto config = "config" in data.object && config.type == JSONValue.Type.object) {
+    if (auto config = "config" in data.object && config.type == Json.Type.object) {
       foreach (key, value; config.object) {
         this.config[key] = value.str;
       }
@@ -184,9 +184,9 @@ struct Snapshot {
   long createdAt;
   string description;
   bool isStateful;
-  JSONValue config;
+  Json config;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto name = "name" in data.object) {
       this.name = name.str;
     }
@@ -221,9 +221,9 @@ struct Operation {
   long createdAt;
   long updatedAt;
   bool mayCancel;
-  JSONValue metadata;
+  Json metadata;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "id" in data.object) {
       this.id = id.str;
     }

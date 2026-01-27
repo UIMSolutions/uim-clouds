@@ -7,7 +7,7 @@ module uim.docker.client;
 
 import std.exception : enforce;
 import std.format : format;
-import std.json : JSONValue, parseJSON;
+import std.json : Json, parseJSON;
 import std.string : split;
 
 import vibe.http.client : HTTPClientRequest, HTTPClientResponse, requestHTTP;
@@ -45,11 +45,11 @@ class DockerClient {
     if (all) {
       path ~= "?all=true";
     }
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list containers: %d", response.statusCode));
 
     Container[] results;
-    if (response.data.type == JSONValue.Type.array) {
+    if (response.data.type == Json.Type.array) {
       foreach (item; response.data.array) {
         results ~= Container(item);
       }
@@ -60,13 +60,13 @@ class DockerClient {
   /// Gets a single container by ID or name.
   Container getContainer(string idOrName) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/json";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get container %s: %d", idOrName, response.statusCode));
     return Container(response.data);
   }
 
   /// Creates a new container.
-  string createContainer(string name, JSONValue config) {
+  string createContainer(string name, Json config) {
     string path = "/" ~ apiVersion ~ "/containers/create?name=" ~ name;
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create container: %d", response.statusCode));
@@ -79,28 +79,28 @@ class DockerClient {
   /// Starts a container.
   void startContainer(string idOrName) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/start";
-    auto response = doRequest("POST", path, JSONValue());
+    auto response = doRequest("POST", path, Json());
     enforce(response.statusCode == 204 || response.statusCode == 304, format("Failed to start container: %d", response.statusCode));
   }
 
   /// Stops a container.
   void stopContainer(string idOrName, int timeout = 10) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/stop?t=" ~ format("%d", timeout);
-    auto response = doRequest("POST", path, JSONValue());
+    auto response = doRequest("POST", path, Json());
     enforce(response.statusCode == 204, format("Failed to stop container: %d", response.statusCode));
   }
 
   /// Removes a container.
   void removeContainer(string idOrName, bool force = false, bool removeVolumes = false) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "?force=" ~ (force ? "true" : "false") ~ "&v=" ~ (removeVolumes ? "true" : "false");
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 204, format("Failed to remove container: %d", response.statusCode));
   }
 
   /// Gets container logs.
   string getLogs(string idOrName, bool stdout = true, bool stderr = true) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/logs?stdout=" ~ (stdout ? "true" : "false") ~ "&stderr=" ~ (stderr ? "true" : "false");
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get logs: %d", response.statusCode));
     return response.logText;
   }
@@ -108,11 +108,11 @@ class DockerClient {
   /// Lists all images.
   Image[] listImages() {
     string path = "/" ~ apiVersion ~ "/images/json";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list images: %d", response.statusCode));
 
     Image[] results;
-    if (response.data.type == JSONValue.Type.array) {
+    if (response.data.type == Json.Type.array) {
       foreach (item; response.data.array) {
         results ~= Image(item);
       }
@@ -123,12 +123,12 @@ class DockerClient {
   /// Lists all volumes.
   Volume[] listVolumes() {
     string path = "/" ~ apiVersion ~ "/volumes";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list volumes: %d", response.statusCode));
 
     Volume[] results;
     if (auto volumesObj = "Volumes" in response.data.object) {
-      if (volumesObj.type == JSONValue.Type.array) {
+      if (volumesObj.type == Json.Type.array) {
         foreach (vol; volumesObj.array) {
           results ~= Volume(vol);
         }
@@ -140,11 +140,11 @@ class DockerClient {
   /// Lists all networks.
   Network[] listNetworks() {
     string path = "/" ~ apiVersion ~ "/networks";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list networks: %d", response.statusCode));
 
     Network[] results;
-    if (response.data.type == JSONValue.Type.array) {
+    if (response.data.type == Json.Type.array) {
       foreach (item; response.data.array) {
         results ~= Network(item);
       }
@@ -155,11 +155,11 @@ class DockerClient {
   /// Creates an exec instance in a container.
   string createExec(string containerId, string[] cmd) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ containerId ~ "/exec";
-    auto cmdArray = JSONValue([]);
+    auto cmdArray = Json([]);
     foreach (arg; cmd) {
-      cmdArray.array ~= JSONValue(arg);
+      cmdArray.array ~= Json(arg);
     }
-    JSONValue config = JSONValue(["Cmd": cmdArray]);
+    Json config = Json(["Cmd": cmdArray]);
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create exec: %d", response.statusCode));
     if (auto id = "Id" in response.data.object) {
@@ -171,7 +171,7 @@ class DockerClient {
   /// Starts an exec instance.
   string execStart(string execId) {
     string path = "/" ~ apiVersion ~ "/exec/" ~ execId ~ "/start";
-    JSONValue config = JSONValue(["Detach": JSONValue(false)]);
+    Json config = Json(["Detach": Json(false)]);
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 200, format("Failed to start exec: %d", response.statusCode));
     return response.logText;
@@ -179,13 +179,13 @@ class DockerClient {
 
 private:
   struct ApiResponse {
-    JSONValue data;
+    Json data;
     string logText;
     int statusCode;
   }
 
-  ApiResponse doRequest(string method, string path, JSONValue body_) {
-    JSONValue result;
+  ApiResponse doRequest(string method, string path, Json body_) {
+    Json result;
     string logText = "";
     int statusCode = 0;
 

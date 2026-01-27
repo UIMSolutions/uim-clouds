@@ -5,7 +5,7 @@
 *****************************************************************************************************************/
 module uim.podman.resources;
 
-import std.json : JSONValue;
+import uim.podman;
 
 @safe:
 
@@ -23,9 +23,9 @@ struct Container {
   string[string] labels;
   string exitCode;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "Id" in data.object) id_data = id.str;
-    if (auto names = "Names" in data.object && names.type == JSONValue.Type.array && names.array.length > 0) {
+    if (auto names = "Names" in data.object && names.type == Json.Type.array && names.array.length > 0) {
       name = names.array[0].str;
     }
     if (auto image = "Image" in data.object) {
@@ -40,7 +40,7 @@ struct Container {
     if (auto created = "Created" in data.object) {
       this.created = created.integer;
     }
-    if (auto labels = "Labels" in data.object && labels.type == JSONValue.Type.object) {
+    if (auto labels = "Labels" in data.object && labels.type == Json.Type.object) {
       foreach (key, value; labels.object) {
         this.labels[key] = value.str;
       }
@@ -57,11 +57,11 @@ struct Image {
   string virtualSize;
   string[string] labels;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "Id" in data.object) {
       this.id = id.str;
     }
-    if (auto repoTags = "RepoTags" in data.object && repoTags.type == JSONValue.Type.array) {
+    if (auto repoTags = "RepoTags" in data.object && repoTags.type == Json.Type.array) {
       foreach (tag; repoTags.array) {
         this.repoTags ~= tag.str;
       }
@@ -72,7 +72,7 @@ struct Image {
     if (auto size = "Size" in data.object) {
       this.size = size.integer;
     }
-    if (auto labels = "Labels" in data.object && labels.type == JSONValue.Type.object) {
+    if (auto labels = "Labels" in data.object && labels.type == Json.Type.object) {
       foreach (key, value; labels.object) {
         this.labels[key] = value.str;
       }
@@ -91,7 +91,7 @@ struct Pod {
   string[] containerIds;
   string[string] labels;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "Id" in data.object) {
       this.id = id.str;
     }
@@ -104,10 +104,10 @@ struct Pod {
     if (auto created = "Created" in data.object) {
       this.created = created.integer;
     }
-    if (auto containers = "Containers" in data.object && containers.type == JSONValue.Type.array) {
+    if (auto containers = "Containers" in data.object && containers.type == Json.Type.array) {
       this.numContainers = cast(int)containers.array.length;
     }
-    if (auto labels = "Labels" in data.object && labels.type == JSONValue.Type.object) {
+    if (auto labels = "Labels" in data.object && labels.type == Json.Type.object) {
       foreach (key, value; labels.object) {
         this.labels[key] = value.str;
       }
@@ -121,9 +121,9 @@ struct Volume {
   string driver;
   string mountPoint;
   string[] labels;
-  JSONValue options;
+  Json options;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto name = "Name" in data.object) {
       this.name = name.str;
     }
@@ -147,7 +147,7 @@ struct Network {
   string scope;
   string ipam;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "Id" in data.object) {
       this.id = id.str;
     }

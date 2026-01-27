@@ -7,7 +7,7 @@ module uim.virtualization.client;
 
 import std.exception : enforce;
 import std.format : format;
-import std.json : JSONValue, parseJSON;
+import std.json : Json, parseJSON;
 
 import vibe.http.client : HTTPClientRequest, HTTPClientResponse, requestHTTP;
 import vibe.stream.operations : readAllUTF8;
@@ -59,12 +59,12 @@ class VirtualizationClient {
     if (includeInactive) {
       path ~= "?includeInactive=true";
     }
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list VMs: %d", response.statusCode));
 
     VirtualMachine[] results;
     if (auto domains = "domains" in response.data.object) {
-      if (domains.type == JSONValue.Type.array) {
+      if (domains.type == Json.Type.array) {
         foreach (item; domains.array) {
           results ~= VirtualMachine(item);
         }
@@ -76,7 +76,7 @@ class VirtualizationClient {
   /// Gets information about a specific VM
   VirtualMachine getVirtualMachine(string nameOrId) {
     string path = "/domains/" ~ nameOrId;
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get VM: %d", response.statusCode));
     return VirtualMachine(response.data);
   }
@@ -84,15 +84,15 @@ class VirtualizationClient {
   /// Gets detailed state of a VM
   VMState getVirtualMachineState(string nameOrId) {
     string path = "/domains/" ~ nameOrId ~ "/state";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get VM state: %d", response.statusCode));
     return VMState(response.data);
   }
 
   /// Creates a new virtual machine
-  string createVirtualMachine(string name, JSONValue config) {
+  string createVirtualMachine(string name, Json config) {
     string path = "/domains";
-    config["name"] = JSONValue(name);
+    config["name"] = Json(name);
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create VM: %d", response.statusCode));
     
@@ -105,7 +105,7 @@ class VirtualizationClient {
   /// Starts a virtual machine
   void startVirtualMachine(string nameOrId) {
     string path = "/domains/" ~ nameOrId ~ "/start";
-    auto response = doRequest("POST", path, JSONValue());
+    auto response = doRequest("POST", path, Json());
     enforce(response.statusCode == 200, format("Failed to start VM: %d", response.statusCode));
   }
 
@@ -113,7 +113,7 @@ class VirtualizationClient {
   void stopVirtualMachine(string nameOrId, bool force = false) {
     string path = "/domains/" ~ nameOrId ~ "/stop";
     if (force) path ~= "?force=true";
-    auto response = doRequest("POST", path, JSONValue());
+    auto response = doRequest("POST", path, Json());
     enforce(response.statusCode == 200, format("Failed to stop VM: %d", response.statusCode));
   }
 
@@ -121,21 +121,21 @@ class VirtualizationClient {
   void rebootVirtualMachine(string nameOrId, bool force = false) {
     string path = "/domains/" ~ nameOrId ~ "/reboot";
     if (force) path ~= "?force=true";
-    auto response = doRequest("POST", path, JSONValue());
+    auto response = doRequest("POST", path, Json());
     enforce(response.statusCode == 200, format("Failed to reboot VM: %d", response.statusCode));
   }
 
   /// Pauses a virtual machine
   void pauseVirtualMachine(string nameOrId) {
     string path = "/domains/" ~ nameOrId ~ "/pause";
-    auto response = doRequest("POST", path, JSONValue());
+    auto response = doRequest("POST", path, Json());
     enforce(response.statusCode == 200, format("Failed to pause VM: %d", response.statusCode));
   }
 
   /// Resumes a paused virtual machine
   void resumeVirtualMachine(string nameOrId) {
     string path = "/domains/" ~ nameOrId ~ "/resume";
-    auto response = doRequest("POST", path, JSONValue());
+    auto response = doRequest("POST", path, Json());
     enforce(response.statusCode == 200, format("Failed to resume VM: %d", response.statusCode));
   }
 
@@ -143,7 +143,7 @@ class VirtualizationClient {
   void destroyVirtualMachine(string nameOrId, bool deleteStorage = false) {
     string path = "/domains/" ~ nameOrId;
     if (deleteStorage) path ~= "?deleteStorage=true";
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 204, format("Failed to destroy VM: %d", response.statusCode));
   }
 
@@ -152,12 +152,12 @@ class VirtualizationClient {
   /// Lists disks attached to a VM
   VirtualDisk[] listVirtualDisks(string vmNameOrId) {
     string path = "/domains/" ~ vmNameOrId ~ "/disks";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list disks: %d", response.statusCode));
 
     VirtualDisk[] results;
     if (auto disks = "disks" in response.data.object) {
-      if (disks.type == JSONValue.Type.array) {
+      if (disks.type == Json.Type.array) {
         foreach (item; disks.array) {
           results ~= VirtualDisk(item);
         }
@@ -167,7 +167,7 @@ class VirtualizationClient {
   }
 
   /// Attaches a disk to a VM
-  void attachDisk(string vmNameOrId, JSONValue diskConfig) {
+  void attachDisk(string vmNameOrId, Json diskConfig) {
     string path = "/domains/" ~ vmNameOrId ~ "/disks";
     auto response = doRequest("POST", path, diskConfig);
     enforce(response.statusCode == 200, format("Failed to attach disk: %d", response.statusCode));
@@ -176,7 +176,7 @@ class VirtualizationClient {
   /// Detaches a disk from a VM
   void detachDisk(string vmNameOrId, string diskTargetDevice) {
     string path = "/domains/" ~ vmNameOrId ~ "/disks/" ~ diskTargetDevice;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 204, format("Failed to detach disk: %d", response.statusCode));
   }
 
@@ -185,12 +185,12 @@ class VirtualizationClient {
   /// Lists network interfaces attached to a VM
   VirtualNIC[] listVirtualNICs(string vmNameOrId) {
     string path = "/domains/" ~ vmNameOrId ~ "/interfaces";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list NICs: %d", response.statusCode));
 
     VirtualNIC[] results;
     if (auto nics = "interfaces" in response.data.object) {
-      if (nics.type == JSONValue.Type.array) {
+      if (nics.type == Json.Type.array) {
         foreach (item; nics.array) {
           results ~= VirtualNIC(item);
         }
@@ -200,7 +200,7 @@ class VirtualizationClient {
   }
 
   /// Attaches a network interface to a VM
-  void attachNIC(string vmNameOrId, JSONValue nicConfig) {
+  void attachNIC(string vmNameOrId, Json nicConfig) {
     string path = "/domains/" ~ vmNameOrId ~ "/interfaces";
     auto response = doRequest("POST", path, nicConfig);
     enforce(response.statusCode == 200, format("Failed to attach NIC: %d", response.statusCode));
@@ -209,7 +209,7 @@ class VirtualizationClient {
   /// Detaches a network interface from a VM
   void detachNIC(string vmNameOrId, string macAddress) {
     string path = "/domains/" ~ vmNameOrId ~ "/interfaces/" ~ macAddress;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 204, format("Failed to detach NIC: %d", response.statusCode));
   }
 
@@ -218,12 +218,12 @@ class VirtualizationClient {
   /// Lists snapshots for a VM
   Snapshot[] listSnapshots(string vmNameOrId) {
     string path = "/domains/" ~ vmNameOrId ~ "/snapshots";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list snapshots: %d", response.statusCode));
 
     Snapshot[] results;
     if (auto snapshots = "snapshots" in response.data.object) {
-      if (snapshots.type == JSONValue.Type.array) {
+      if (snapshots.type == Json.Type.array) {
         foreach (item; snapshots.array) {
           results ~= Snapshot(item);
         }
@@ -235,9 +235,9 @@ class VirtualizationClient {
   /// Creates a snapshot of a VM
   string createSnapshot(string vmNameOrId, string snapshotName, string description = "") {
     string path = "/domains/" ~ vmNameOrId ~ "/snapshots";
-    JSONValue config = JSONValue(["name": JSONValue(snapshotName)]);
+    Json config = Json(["name": Json(snapshotName)]);
     if (description.length > 0) {
-      config["description"] = JSONValue(description);
+      config["description"] = Json(description);
     }
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create snapshot: %d", response.statusCode));
@@ -251,14 +251,14 @@ class VirtualizationClient {
   /// Reverts a VM to a snapshot
   void revertToSnapshot(string vmNameOrId, string snapshotName) {
     string path = "/domains/" ~ vmNameOrId ~ "/snapshots/" ~ snapshotName ~ "/revert";
-    auto response = doRequest("POST", path, JSONValue());
+    auto response = doRequest("POST", path, Json());
     enforce(response.statusCode == 200, format("Failed to revert snapshot: %d", response.statusCode));
   }
 
   /// Deletes a snapshot
   void deleteSnapshot(string vmNameOrId, string snapshotName) {
     string path = "/domains/" ~ vmNameOrId ~ "/snapshots/" ~ snapshotName;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 204, format("Failed to delete snapshot: %d", response.statusCode));
   }
 
@@ -268,12 +268,12 @@ class VirtualizationClient {
   StoragePool[] listStoragePools(bool includeInactive = false) {
     string path = "/storagePools";
     if (includeInactive) path ~= "?includeInactive=true";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list storage pools: %d", response.statusCode));
 
     StoragePool[] results;
     if (auto pools = "pools" in response.data.object) {
-      if (pools.type == JSONValue.Type.array) {
+      if (pools.type == Json.Type.array) {
         foreach (item; pools.array) {
           results ~= StoragePool(item);
         }
@@ -285,15 +285,15 @@ class VirtualizationClient {
   /// Gets information about a storage pool
   StoragePool getStoragePool(string poolName) {
     string path = "/storagePools/" ~ poolName;
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get storage pool: %d", response.statusCode));
     return StoragePool(response.data);
   }
 
   /// Creates a storage pool
-  string createStoragePool(string poolName, JSONValue config) {
+  string createStoragePool(string poolName, Json config) {
     string path = "/storagePools";
-    config["name"] = JSONValue(poolName);
+    config["name"] = Json(poolName);
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create storage pool: %d", response.statusCode));
     
@@ -306,19 +306,19 @@ class VirtualizationClient {
   /// Deletes a storage pool
   void deleteStoragePool(string poolName) {
     string path = "/storagePools/" ~ poolName;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 204, format("Failed to delete storage pool: %d", response.statusCode));
   }
 
   /// Lists volumes in a storage pool
   StorageVolume[] listStorageVolumes(string poolName) {
     string path = "/storagePools/" ~ poolName ~ "/volumes";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list storage volumes: %d", response.statusCode));
 
     StorageVolume[] results;
     if (auto volumes = "volumes" in response.data.object) {
-      if (volumes.type == JSONValue.Type.array) {
+      if (volumes.type == Json.Type.array) {
         foreach (item; volumes.array) {
           results ~= StorageVolume(item);
         }
@@ -328,7 +328,7 @@ class VirtualizationClient {
   }
 
   /// Creates a storage volume
-  string createStorageVolume(string poolName, JSONValue volumeConfig) {
+  string createStorageVolume(string poolName, Json volumeConfig) {
     string path = "/storagePools/" ~ poolName ~ "/volumes";
     auto response = doRequest("POST", path, volumeConfig);
     enforce(response.statusCode == 201, format("Failed to create volume: %d", response.statusCode));
@@ -342,7 +342,7 @@ class VirtualizationClient {
   /// Deletes a storage volume
   void deleteStorageVolume(string poolName, string volumeName) {
     string path = "/storagePools/" ~ poolName ~ "/volumes/" ~ volumeName;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 204, format("Failed to delete volume: %d", response.statusCode));
   }
 
@@ -352,12 +352,12 @@ class VirtualizationClient {
   VirtualNetwork[] listVirtualNetworks(bool includeInactive = false) {
     string path = "/networks";
     if (includeInactive) path ~= "?includeInactive=true";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list networks: %d", response.statusCode));
 
     VirtualNetwork[] results;
     if (auto networks = "networks" in response.data.object) {
-      if (networks.type == JSONValue.Type.array) {
+      if (networks.type == Json.Type.array) {
         foreach (item; networks.array) {
           results ~= VirtualNetwork(item);
         }
@@ -369,15 +369,15 @@ class VirtualizationClient {
   /// Gets information about a virtual network
   VirtualNetwork getVirtualNetwork(string networkName) {
     string path = "/networks/" ~ networkName;
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get network: %d", response.statusCode));
     return VirtualNetwork(response.data);
   }
 
   /// Creates a virtual network
-  string createVirtualNetwork(string networkName, JSONValue config) {
+  string createVirtualNetwork(string networkName, Json config) {
     string path = "/networks";
-    config["name"] = JSONValue(networkName);
+    config["name"] = Json(networkName);
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create network: %d", response.statusCode));
     
@@ -390,7 +390,7 @@ class VirtualizationClient {
   /// Deletes a virtual network
   void deleteVirtualNetwork(string networkName) {
     string path = "/networks/" ~ networkName;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 204, format("Failed to delete network: %d", response.statusCode));
   }
 
@@ -398,11 +398,11 @@ class VirtualizationClient {
 
   /// Clones a virtual machine
   string cloneVirtualMachine(CloneConfig config) {
-    JSONValue requestBody = JSONValue([
-      "sourceVMName": JSONValue(config.sourceVMName),
-      "targetVMName": JSONValue(config.targetVMName),
-      "snapshotParent": JSONValue(config.snapshotParent),
-      "resetMacAddresses": JSONValue(config.resetMacAddresses)
+    Json requestBody = Json([
+      "sourceVMName": Json(config.sourceVMName),
+      "targetVMName": Json(config.targetVMName),
+      "snapshotParent": Json(config.snapshotParent),
+      "resetMacAddresses": Json(config.resetMacAddresses)
     ]);
     
     string path = "/domains/clone";
@@ -417,10 +417,10 @@ class VirtualizationClient {
 
   /// Migrates a VM to another host
   void migrateVirtualMachine(MigrationInfo migrationInfo) {
-    JSONValue requestBody = JSONValue([
-      "targetUri": JSONValue(migrationInfo.uri),
-      "live": JSONValue(migrationInfo.liveFlag),
-      "persistAfterMigration": JSONValue(migrationInfo.persistAfterMigration)
+    Json requestBody = Json([
+      "targetUri": Json(migrationInfo.uri),
+      "live": Json(migrationInfo.liveFlag),
+      "persistAfterMigration": Json(migrationInfo.persistAfterMigration)
     ]);
     
     string path = "/domains/" ~ migrationInfo.vmName ~ "/migrate";
@@ -433,7 +433,7 @@ class VirtualizationClient {
   /// Gets host capabilities
   HostCapabilities getHostCapabilities() {
     string path = "/capabilities";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get capabilities: %d", response.statusCode));
     
     HostCapabilities caps;
@@ -445,15 +445,15 @@ class VirtualizationClient {
 
   private struct HttpResponse {
     int statusCode;
-    JSONValue data;
+    Json data;
   }
 
-  private HttpResponse doRequest(string method, string path, JSONValue body_) @system {
+  private HttpResponse doRequest(string method, string path, Json body_) @system {
     // This would be implemented with actual HTTP calls
     // For now, this is a placeholder that shows the structure
     HttpResponse response;
     response.statusCode = 200;
-    response.data = JSONValue();
+    response.data = Json();
     return response;
   }
 }

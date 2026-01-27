@@ -5,7 +5,7 @@
 *****************************************************************************************************************/
 module uim.kvm.resources;
 
-import std.json : JSONValue;
+import std.json : Json;
 
 @safe:
 
@@ -22,7 +22,7 @@ struct KVMDomain {
   string uuid;
   bool autostart;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto idVal = "id" in data.object) this.id = idVal.str;
     if (auto nameVal = "name" in data.object) this.name = nameVal.str;
     if (auto stateVal = "state" in data.object) this.state = stateVal.str;
@@ -32,7 +32,7 @@ struct KVMDomain {
     if (auto archVal = "arch" in data.object) this.arch = archVal.str;
     if (auto mach = "machine" in data.object) this.machine = mach.str;
     if (auto uuidVal = "uuid" in data.object) this.uuid = uuidVal.str;
-    if (auto autoVal = "autostart" in data.object) this.autostart = autoVal.type == JSONValue.Type.true_;
+    if (auto autoVal = "autostart" in data.object) this.autostart = autoVal.type == Json.Type.true_;
   }
 }
 
@@ -45,13 +45,13 @@ struct KVMSnapshot {
   long creationTime;
   bool current;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto nameVal = "name" in data.object) this.name = nameVal.str;
     if (auto parentVal = "parent" in data.object) this.parent = parentVal.str;
     if (auto desc = "description" in data.object) this.description = desc.str;
     if (auto stateVal = "state" in data.object) this.state = stateVal.str;
     if (auto ts = "creation" in data.object) this.creationTime = ts.integer;
-    if (auto cur = "current" in data.object) this.current = cur.type == JSONValue.Type.true_;
+    if (auto cur = "current" in data.object) this.current = cur.type == Json.Type.true_;
   }
 }
 
@@ -63,12 +63,12 @@ struct KVMStoragePool {
   string path;
   bool autostart;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto nameVal = "name" in data.object) this.name = nameVal.str;
     if (auto stateVal = "state" in data.object) this.state = stateVal.str;
     if (auto typeVal = "type" in data.object) this.type = typeVal.str;
     if (auto pathVal = "path" in data.object) this.path = pathVal.str;
-    if (auto autoVal = "autostart" in data.object) this.autostart = autoVal.type == JSONValue.Type.true_;
+    if (auto autoVal = "autostart" in data.object) this.autostart = autoVal.type == Json.Type.true_;
   }
 }
 
@@ -81,12 +81,12 @@ struct KVMNetwork {
   bool autostart;
   string status;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto nameVal = "name" in data.object) this.name = nameVal.str;
     if (auto modeVal = "mode" in data.object) this.mode = modeVal.str;
     if (auto bridgeVal = "bridge" in data.object) this.bridge = bridgeVal.str;
     if (auto uuidVal = "uuid" in data.object) this.uuid = uuidVal.str;
-    if (auto autoVal = "autostart" in data.object) this.autostart = autoVal.type == JSONValue.Type.true_;
+    if (auto autoVal = "autostart" in data.object) this.autostart = autoVal.type == Json.Type.true_;
     if (auto statusVal = "status" in data.object) this.status = statusVal.str;
   }
 }

@@ -5,66 +5,66 @@
 *****************************************************************************************************************/
 module uim.virtualbox.helpers;
 
-import std.json : JSONValue;
+import std.json : Json;
 import std.format : format;
 
 @safe:
 
 /// Builds a minimal VM definition
-JSONValue createVMDefinition(
+Json createVMDefinition(
   string name,
   int cpuCount = 2,
   long memoryMB = 2048,
   string osType = "Linux_64"
 ) {
-  JSONValue config = JSONValue([
-    "name": JSONValue(name),
-    "cpus": JSONValue(cpuCount),
-    "memory": JSONValue(memoryMB),
-    "ostype": JSONValue(osType)
+  Json config = Json([
+    "name": Json(name),
+    "cpus": Json(cpuCount),
+    "memory": Json(memoryMB),
+    "ostype": Json(osType)
   ]);
   return config;
 }
 
 /// Creates a storage attachment (disk or ISO)
-JSONValue createStorageAttachment(
+Json createStorageAttachment(
   string controller,
   string port,
   string device,
   string medium,
   string type = "hdd"
 ) {
-  return JSONValue([
-    "controller": JSONValue(controller),
-    "port": JSONValue(port),
-    "device": JSONValue(device),
-    "medium": JSONValue(medium),
-    "type": JSONValue(type)
+  return Json([
+    "controller": Json(controller),
+    "port": Json(port),
+    "device": Json(device),
+    "medium": Json(medium),
+    "type": Json(type)
   ]);
 }
 
 /// Creates a NIC configuration
-JSONValue createNIC(
+Json createNIC(
   string slot,
   string mode = "nat",
   string attachment = "",
   string driver = "virtio",
   string macAddress = ""
 ) {
-  JSONValue cfg = JSONValue([
-    "slot": JSONValue(slot),
-    "type": JSONValue(mode),
-    "driver": JSONValue(driver)
+  Json cfg = Json([
+    "slot": Json(slot),
+    "type": Json(mode),
+    "driver": Json(driver)
   ]);
-  if (attachment.length > 0) cfg["attachment"] = JSONValue(attachment);
-  if (macAddress.length > 0) cfg["mac"] = JSONValue(macAddress);
+  if (attachment.length > 0) cfg["attachment"] = Json(attachment);
+  if (macAddress.length > 0) cfg["mac"] = Json(macAddress);
   return cfg;
 }
 
 /// Creates a snapshot description
-JSONValue createSnapshotDefinition(string name, string description = "") {
-  JSONValue cfg = JSONValue(["name": JSONValue(name)]);
-  if (description.length > 0) cfg["description"] = JSONValue(description);
+Json createSnapshotDefinition(string name, string description = "") {
+  Json cfg = Json(["name": Json(name)]);
+  if (description.length > 0) cfg["description"] = Json(description);
   return cfg;
 }
 

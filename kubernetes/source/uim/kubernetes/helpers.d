@@ -7,25 +7,25 @@ module uim.kubernetes.helpers;
 
 import std.exception : enforce;
 import std.format : format;
-import std.json : JSONValue;
+import std.json : Json;
 
 @safe:
 
 /// Creates a Pod manifest JSON.
-JSONValue createPodManifest(string name, string image, string namespace_ = "default") {
-  JSONValue pod = JSONValue([
-    "apiVersion": JSONValue("v1"),
-    "kind": JSONValue("Pod"),
-    "metadata": JSONValue([
-      "name": JSONValue(name),
-      "namespace": JSONValue(namespace_)
+Json createPodManifest(string name, string image, string namespace_ = "default") {
+  Json pod = Json([
+    "apiVersion": Json("v1"),
+    "kind": Json("Pod"),
+    "metadata": Json([
+      "name": Json(name),
+      "namespace": Json(namespace_)
     ]),
-    "spec": JSONValue([
-      "containers": JSONValue([
-        JSONValue([
-          "name": JSONValue(name),
-          "image": JSONValue(image),
-          "imagePullPolicy": JSONValue("IfNotPresent")
+    "spec": Json([
+      "containers": Json([
+        Json([
+          "name": Json(name),
+          "image": Json(image),
+          "imagePullPolicy": Json("IfNotPresent")
         ])
       ])
     ])
@@ -34,33 +34,33 @@ JSONValue createPodManifest(string name, string image, string namespace_ = "defa
 }
 
 /// Creates a Deployment manifest JSON.
-JSONValue createDeploymentManifest(string name, string image, size_t replicas = 1, string namespace_ = "default") {
-  JSONValue deployment = JSONValue([
-    "apiVersion": JSONValue("apps/v1"),
-    "kind": JSONValue("Deployment"),
-    "metadata": JSONValue([
-      "name": JSONValue(name),
-      "namespace": JSONValue(namespace_)
+Json createDeploymentManifest(string name, string image, size_t replicas = 1, string namespace_ = "default") {
+  Json deployment = Json([
+    "apiVersion": Json("apps/v1"),
+    "kind": Json("Deployment"),
+    "metadata": Json([
+      "name": Json(name),
+      "namespace": Json(namespace_)
     ]),
-    "spec": JSONValue([
-      "replicas": JSONValue(cast(long) replicas),
-      "selector": JSONValue([
-        "matchLabels": JSONValue([
-          "app": JSONValue(name)
+    "spec": Json([
+      "replicas": Json(cast(long) replicas),
+      "selector": Json([
+        "matchLabels": Json([
+          "app": Json(name)
         ])
       ]),
-      "template": JSONValue([
-        "metadata": JSONValue([
-          "labels": JSONValue([
-            "app": JSONValue(name)
+      "template": Json([
+        "metadata": Json([
+          "labels": Json([
+            "app": Json(name)
           ])
         ]),
-        "spec": JSONValue([
-          "containers": JSONValue([
-            JSONValue([
-              "name": JSONValue(name),
-              "image": JSONValue(image),
-              "imagePullPolicy": JSONValue("IfNotPresent")
+        "spec": Json([
+          "containers": Json([
+            Json([
+              "name": Json(name),
+              "image": Json(image),
+              "imagePullPolicy": Json("IfNotPresent")
             ])
           ])
         ])
@@ -71,24 +71,24 @@ JSONValue createDeploymentManifest(string name, string image, size_t replicas = 
 }
 
 /// Creates a Service manifest JSON.
-JSONValue createServiceManifest(string name, string appLabel, ushort port, string namespace_ = "default") {
-  JSONValue service = JSONValue([
-    "apiVersion": JSONValue("v1"),
-    "kind": JSONValue("Service"),
-    "metadata": JSONValue([
-      "name": JSONValue(name),
-      "namespace": JSONValue(namespace_)
+Json createServiceManifest(string name, string appLabel, ushort port, string namespace_ = "default") {
+  Json service = Json([
+    "apiVersion": Json("v1"),
+    "kind": Json("Service"),
+    "metadata": Json([
+      "name": Json(name),
+      "namespace": Json(namespace_)
     ]),
-    "spec": JSONValue([
-      "type": JSONValue("ClusterIP"),
-      "selector": JSONValue([
-        "app": JSONValue(appLabel)
+    "spec": Json([
+      "type": Json("ClusterIP"),
+      "selector": Json([
+        "app": Json(appLabel)
       ]),
-      "ports": JSONValue([
-        JSONValue([
-          "protocol": JSONValue("TCP"),
-          "port": JSONValue(cast(long) port),
-          "targetPort": JSONValue(cast(long) port)
+      "ports": Json([
+        Json([
+          "protocol": Json("TCP"),
+          "port": Json(cast(long) port),
+          "targetPort": Json(cast(long) port)
         ])
       ])
     ])
@@ -97,29 +97,29 @@ JSONValue createServiceManifest(string name, string appLabel, ushort port, strin
 }
 
 /// Creates a ConfigMap manifest JSON.
-JSONValue createConfigMapManifest(string name, string[string] data, string namespace_ = "default") {
-  JSONValue[string] dataObj;
+Json createConfigMapManifest(string name, string[string] data, string namespace_ = "default") {
+  Json[string] dataObj;
   foreach (key, value; data) {
-    dataObj[key] = JSONValue(value);
+    dataObj[key] = Json(value);
   }
 
-  JSONValue configMap = JSONValue([
-    "apiVersion": JSONValue("v1"),
-    "kind": JSONValue("ConfigMap"),
-    "metadata": JSONValue([
-      "name": JSONValue(name),
-      "namespace": JSONValue(namespace_)
+  Json configMap = Json([
+    "apiVersion": Json("v1"),
+    "kind": Json("ConfigMap"),
+    "metadata": Json([
+      "name": Json(name),
+      "namespace": Json(namespace_)
     ]),
-    "data": JSONValue(dataObj)
+    "data": Json(dataObj)
   ]);
   return configMap;
 }
 
 /// Extracts the container image from a Pod spec.
-string getContainerImage(JSONValue pod) @trusted {
+string getContainerImage(Json pod) @trusted {
   if (auto spec = "spec" in pod.object) {
     if (auto containers = "containers" in spec.object) {
-      if (containers.type == JSONValue.Type.array && containers.array.length > 0) {
+      if (containers.type == Json.Type.array && containers.array.length > 0) {
         if (auto image = "image" in containers.array[0].object) {
           return image.str;
         }
@@ -130,10 +130,10 @@ string getContainerImage(JSONValue pod) @trusted {
 }
 
 /// Checks if a resource is in a terminal state.
-bool isTerminal(JSONValue resource) @trusted {
+bool isTerminal(Json resource) @trusted {
   if (auto metadata = "metadata" in resource.object) {
     if (auto delTime = "deletionTimestamp" in metadata.object) {
-      if (delTime.type == JSONValue.Type.string) {
+      if (delTime.type == Json.Type.string) {
         return true;
       }
     }
@@ -142,7 +142,7 @@ bool isTerminal(JSONValue resource) @trusted {
 }
 
 /// Gets the resource version from metadata.
-string getResourceVersion(JSONValue resource) @trusted {
+string getResourceVersion(Json resource) @trusted {
   if (auto metadata = "metadata" in resource.object) {
     if (auto rv = "resourceVersion" in metadata.object) {
       return rv.str;

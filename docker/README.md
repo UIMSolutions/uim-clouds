@@ -34,12 +34,12 @@ foreach (container; containers) {
 ### Create and start a container
 ```d
 import uim.docker;
-import std.json : JSONValue;
+import std.json : Json;
 
 auto client = DockerClient("unix:///var/run/docker.sock");
-auto spec = JSONValue([
-  "Image": JSONValue("nginx:latest"),
-  "HostConfig": JSONValue(["PortBindings": JSONValue(["80/tcp": JSONValue([])])])
+auto spec = Json([
+  "Image": Json("nginx:latest"),
+  "HostConfig": Json(["PortBindings": Json(["80/tcp": Json([])])])
 ]);
 auto containerId = client.createContainer("my-nginx", spec);
 client.startContainer(containerId);

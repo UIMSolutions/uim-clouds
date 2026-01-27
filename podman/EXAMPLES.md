@@ -42,7 +42,7 @@ void main() {
 
 ```d
 import uim.podman;
-import std.json : JSONValue;
+import std.json : Json;
 
 void main() {
   auto config = defaultConfig();
@@ -169,7 +169,7 @@ void main() {
 
 ```d
 import uim.podman;
-import std.json : JSONValue;
+import std.json : Json;
 
 void main() {
   auto config = defaultConfig();

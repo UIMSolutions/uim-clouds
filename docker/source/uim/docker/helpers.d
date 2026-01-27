@@ -5,54 +5,54 @@
 *****************************************************************************************************************/
 module uim.docker.helpers;
 
-import std.json : JSONValue;
+import std.json : Json;
 
 @safe:
 
 /// Creates a container config for a simple image run.
-JSONValue createContainerConfig(string image, string[] cmd = [], string[] env = []) {
-  JSONValue[] cmdArray;
+Json createContainerConfig(string image, string[] cmd = [], string[] env = []) {
+  Json[] cmdArray;
   foreach (c; cmd) {
-    cmdArray ~= JSONValue(c);
+    cmdArray ~= Json(c);
   }
 
-  JSONValue[] envArray;
+  Json[] envArray;
   foreach (e; env) {
-    envArray ~= JSONValue(e);
+    envArray ~= Json(e);
   }
 
-  JSONValue config = JSONValue([
-    "Image": JSONValue(image),
-    "Cmd": JSONValue(cmdArray),
-    "Env": JSONValue(envArray)
+  Json config = Json([
+    "Image": Json(image),
+    "Cmd": Json(cmdArray),
+    "Env": Json(envArray)
   ]);
   return config;
 }
 
 /// Creates port bindings for container.
-JSONValue createPortBindings(string[string] portMap) {
-  JSONValue[string] bindings;
+Json createPortBindings(string[string] portMap) {
+  Json[string] bindings;
   foreach (containerPort, hostPort; portMap) {
-    bindings[containerPort] = JSONValue([
-      JSONValue([
-        "HostPort": JSONValue(hostPort)
+    bindings[containerPort] = Json([
+      Json([
+        "HostPort": Json(hostPort)
       ])
     ]);
   }
-  return JSONValue(bindings);
+  return Json(bindings);
 }
 
 /// Creates volume mounts for container.
-JSONValue createVolumeMounts(string[string] mounts) {
-  JSONValue[] volumeList;
+Json createVolumeMounts(string[string] mounts) {
+  Json[] volumeList;
   foreach (containerPath, hostPath; mounts) {
-    volumeList ~= JSONValue([
-      "Source": JSONValue(hostPath),
-      "Target": JSONValue(containerPath),
-      "ReadOnly": JSONValue(false)
+    volumeList ~= Json([
+      "Source": Json(hostPath),
+      "Target": Json(containerPath),
+      "ReadOnly": Json(false)
     ]);
   }
-  return JSONValue(volumeList);
+  return Json(volumeList);
 }
 
 /// Creates environment variables from map.
@@ -65,19 +65,19 @@ string[] createEnvArray(string[string] env) {
 }
 
 /// Creates a volume creation config.
-JSONValue createVolumeConfig(string name, string driver = "local") {
-  JSONValue config = JSONValue([
-    "Name": JSONValue(name),
-    "Driver": JSONValue(driver)
+Json createVolumeConfig(string name, string driver = "local") {
+  Json config = Json([
+    "Name": Json(name),
+    "Driver": Json(driver)
   ]);
   return config;
 }
 
 /// Creates a network creation config.
-JSONValue createNetworkConfig(string name, string driver = "bridge") {
-  JSONValue config = JSONValue([
-    "Name": JSONValue(name),
-    "Driver": JSONValue(driver)
+Json createNetworkConfig(string name, string driver = "bridge") {
+  Json config = Json([
+    "Name": Json(name),
+    "Driver": Json(driver)
   ]);
   return config;
 }

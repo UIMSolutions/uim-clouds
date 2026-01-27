@@ -5,51 +5,51 @@
 *****************************************************************************************************************/
 module uim.kvm.helpers;
 
-import std.json : JSONValue;
+import std.json : Json;
 import std.format : format;
 
 @safe:
 
 /// Minimal domain definition (JSON placeholder for XML)
-JSONValue createDomainDefinition(
+Json createDomainDefinition(
   string name,
   int vcpus = 2,
   long memoryMiB = 2048,
   string osType = "hvm",
   string arch = "x86_64"
 ) {
-  JSONValue defn = JSONValue([
-    "name": JSONValue(name),
-    "vcpus": JSONValue(vcpus),
-    "memory": JSONValue(memoryMiB * 1024), // libvirt expects KiB
-    "ostype": JSONValue(osType),
-    "arch": JSONValue(arch)
+  Json defn = Json([
+    "name": Json(name),
+    "vcpus": Json(vcpus),
+    "memory": Json(memoryMiB * 1024), // libvirt expects KiB
+    "ostype": Json(osType),
+    "arch": Json(arch)
   ]);
   return defn;
 }
 
 /// Snapshot definition helper
-JSONValue createSnapshotDefinition(string name, string description = "") {
-  JSONValue defn = JSONValue(["name": JSONValue(name)]);
-  if (description.length > 0) defn["description"] = JSONValue(description);
+Json createSnapshotDefinition(string name, string description = "") {
+  Json defn = Json(["name": Json(name)]);
+  if (description.length > 0) defn["description"] = Json(description);
   return defn;
 }
 
 /// Storage pool definition helper
-JSONValue createStoragePoolDefinition(string name, string type = "dir", string path = "/var/lib/libvirt/images") {
-  return JSONValue([
-    "name": JSONValue(name),
-    "type": JSONValue(type),
-    "path": JSONValue(path)
+Json createStoragePoolDefinition(string name, string type = "dir", string path = "/var/lib/libvirt/images") {
+  return Json([
+    "name": Json(name),
+    "type": Json(type),
+    "path": Json(path)
   ]);
 }
 
 /// Network definition helper
-JSONValue createNetworkDefinition(string name, string mode = "nat", string bridge = "virbr0") {
-  return JSONValue([
-    "name": JSONValue(name),
-    "mode": JSONValue(mode),
-    "bridge": JSONValue(bridge)
+Json createNetworkDefinition(string name, string mode = "nat", string bridge = "virbr0") {
+  return Json([
+    "name": Json(name),
+    "mode": Json(mode),
+    "bridge": Json(bridge)
   ]);
 }
 

@@ -5,7 +5,7 @@
 *****************************************************************************************************************/
 module uim.virtualization.resources;
 
-import std.json : JSONValue;
+import std.json : Json;
 import std.conv : to;
 
 @safe:
@@ -21,9 +21,9 @@ struct VirtualMachine {
   long cpuTimeNs;            // CPU time in nanoseconds
   string uuid;
   string hypervisorType;
-  JSONValue config;
+  Json config;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "id" in data.object) id_data = id.str;
     if (auto name = "name" in data.object) this.name = name.str;
     if (auto state = "state" in data.object) this.state = state.str;
@@ -47,7 +47,7 @@ struct VMState {
   bool hasSnapshot;
   long cpu_time;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto name = "name" in data.object) this.name = name.str;
     if (auto state = "state" in data.object) this.state = state.str;
     if (auto vcpus = "active_vcpus" in data.object) this.vCpuCount = cast(int)vcpus.integer;
@@ -67,7 +67,7 @@ struct VirtualDisk {
   string sourcePath;
   string targetDevice;       // hda, sda, vda, etc.
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "id" in data.object) id_data = id.str;
     if (auto name = "name" in data.object) this.name = name.str;
     if (auto path = "path" in data.object) this.path = path.str;
@@ -89,7 +89,7 @@ struct VirtualNIC {
   string type;               // network, bridge, user, etc.
   string model;              // virtio, e1000, etc.
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "id" in data.object) id_data = id.str;
     if (auto name = "name" in data.object) this.name = name.str;
     if (auto mac = "mac" in data.object) this.macAddress = mac.str;
@@ -109,13 +109,13 @@ struct VirtualNetwork {
   string ipv4Network;        // e.g., "192.168.122.0/24"
   string ipv6Network;        // e.g., "fe80::/64"
   bool enableDhcp;
-  JSONValue config;
+  Json config;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "id" in data.object) id_data = id.str;
     if (auto name = "name" in data.object) this.name = name.str;
     if (auto bridge = "bridge" in data.object) this.bridgeName = bridge.str;
-    if (auto active = "active" in data.object) this.isActive = active.type == JSONValue.Type.true_;
+    if (auto active = "active" in data.object) this.isActive = active.type == Json.Type.true_;
   }
 }
 
@@ -131,9 +131,9 @@ struct StoragePool {
   long availableBytes;
   bool isActive;
   bool isPersistent;
-  JSONValue config;
+  Json config;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "id" in data.object) id_data = id.str;
     if (auto name = "name" in data.object) this.name = name.str;
     if (auto type = "type" in data.object) this.type = type.str;
@@ -152,9 +152,9 @@ struct StorageVolume {
   long sizeBytes;
   long allocationBytes;
   string path;
-  JSONValue backingStore;    // For CoW volumes
+  Json backingStore;    // For CoW volumes
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "id" in data.object) id_data = id.str;
     if (auto name = "name" in data.object) this.name = name.str;
     if (auto type = "type" in data.object) this.type = type.str;
@@ -171,9 +171,9 @@ struct Snapshot {
   bool isCurrent;
   string vmName;
   long sizeBytes;
-  JSONValue metadata;
+  Json metadata;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "id" in data.object) id_data = id.str;
     if (auto name = "name" in data.object) this.name = name.str;
     if (auto desc = "description" in data.object) this.description = desc.str;

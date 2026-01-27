@@ -5,7 +5,7 @@
 *****************************************************************************************************************/
 module uim.kubernetes.watch;
 
-import std.json : JSONValue, JSONType, parseJSON;
+import std.json : Json, JSONType, parseJSON;
 import std.string : split;
 
 import vibe.http.client : HTTPClientRequest, HTTPClientResponse, requestHTTP;
@@ -18,7 +18,7 @@ import uim.kubernetes.client;
 /// Represents an event from a Kubernetes watch stream.
 struct WatchEvent {
   string type;  // ADDED, MODIFIED, DELETED, ERROR
-  JSONValue object;
+  Json object;
 }
 
 /// Watches a Kubernetes resource stream.

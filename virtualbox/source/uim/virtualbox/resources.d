@@ -5,7 +5,7 @@
 *****************************************************************************************************************/
 module uim.virtualbox.resources;
 
-import std.json : JSONValue;
+import std.json : Json;
 import std.conv : to;
 
 @safe:
@@ -22,7 +22,7 @@ struct VBoxVM {
   string uuid;
   string acpiState;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "id" in data.object) this.id = id.str;
     if (auto name = "name" in data.object) this.name = name.str;
     if (auto state = "state" in data.object) this.state = state.str;
@@ -41,12 +41,12 @@ struct VBoxSnapshot {
   long timeStamp;
   bool current;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto id = "id" in data.object) this.id = id.str;
     if (auto name = "name" in data.object) this.name = name.str;
     if (auto desc = "description" in data.object) this.description = desc.str;
     if (auto ts = "timestamp" in data.object) this.timeStamp = ts.integer;
-    if (auto cur = "current" in data.object) this.current = cur.type == JSONValue.Type.true_;
+    if (auto cur = "current" in data.object) this.current = cur.type == Json.Type.true_;
   }
 }
 
@@ -58,7 +58,7 @@ struct VBoxStorageAttachment {
   string medium;      // path to image
   string controller;
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto port = "port" in data.object) this.port = port.str;
     if (auto dev = "device" in data.object) this.device = dev.str;
     if (auto type = "type" in data.object) this.type = type.str;
@@ -76,12 +76,12 @@ struct VBoxNIC {
   bool cableConnected;
   string driver;      // virtio, e1000, etc.
 
-  this(JSONValue data) {
+  this(Json data) {
     if (auto slot = "slot" in data.object) this.slot = slot.str;
     if (auto type = "type" in data.object) this.type = type.str;
     if (auto mac = "mac" in data.object) this.macAddress = mac.str;
     if (auto att = "attachment" in data.object) this.attachment = att.str;
-    if (auto cable = "cable" in data.object) this.cableConnected = cable.type == JSONValue.Type.true_;
+    if (auto cable = "cable" in data.object) this.cableConnected = cable.type == Json.Type.true_;
     if (auto drv = "driver" in data.object) this.driver = drv.str;
   }
 }

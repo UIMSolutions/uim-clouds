@@ -7,7 +7,7 @@ module uim.kubernetes.client;
 
 import std.exception : enforce;
 import std.format : format;
-import std.json : JSONValue, parseJSON;
+import std.json : Json, parseJSON;
 import std.string : split;
 
 import vibe.http.client : HTTPClientRequest, HTTPClientResponse, requestHTTP;
@@ -43,7 +43,7 @@ class KubernetesClient {
   /// Lists resources of a given kind in a namespace.
   KubernetesResource[] listResources(string apiVersion, string kind, string namespace_) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind;
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list %s: %d", kind, response.statusCode));
 
     auto items = response.data["items"].array;
@@ -57,13 +57,13 @@ class KubernetesClient {
   /// Gets a single resource by name.
   KubernetesResource getResource(string apiVersion, string kind, string namespace_, string name) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind ~ "/" ~ name;
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get %s %s: %d", kind, name, response.statusCode));
     return KubernetesResource(response.data);
   }
 
   /// Creates a new resource.
-  KubernetesResource createResource(string apiVersion, string kind, string namespace_, JSONValue spec) {
+  KubernetesResource createResource(string apiVersion, string kind, string namespace_, Json spec) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind;
     auto response = doRequest("POST", path, spec);
     enforce(response.statusCode == 201, format("Failed to create %s: %d", kind, response.statusCode));
@@ -71,7 +71,7 @@ class KubernetesClient {
   }
 
   /// Updates an existing resource.
-  KubernetesResource updateResource(string apiVersion, string kind, string namespace_, string name, JSONValue spec) {
+  KubernetesResource updateResource(string apiVersion, string kind, string namespace_, string name, Json spec) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind ~ "/" ~ name;
     auto response = doRequest("PUT", path, spec);
     enforce(response.statusCode == 200, format("Failed to update %s %s: %d", kind, name, response.statusCode));
@@ -81,7 +81,7 @@ class KubernetesClient {
   /// Deletes a resource.
   void deleteResource(string apiVersion, string kind, string namespace_, string name) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind ~ "/" ~ name;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 200 || response.statusCode == 202, format("Failed to delete %s %s: %d", kind, name, response.statusCode));
   }
 
@@ -158,14 +158,14 @@ class KubernetesClient {
 
 private:
   struct ApiResponse {
-    JSONValue data;
+    Json data;
     int statusCode;
   }
 
-  ApiResponse doRequest(string method, string path, JSONValue body_) {
+  ApiResponse doRequest(string method, string path, Json body_) {
     auto url = apiServer ~ path;
 
-    JSONValue result;
+    Json result;
     int statusCode = 0;
 
     requestHTTP(url,
@@ -176,7 +176,7 @@ private:
         if (insecureSkipVerify) {
           req.sslContext = null;
         }
-        if (body_.type != JSONValue.Type.null_) {
+        if (body_.type != Json.Type.null_) {
           req.writeBody(body_.toString());
         }
       },
@@ -187,7 +187,7 @@ private:
           try {
             result = parseJSON(bodyStr);
           } catch (Exception) {
-            result = JSONValue(bodyStr);
+            result = Json(bodyStr);
           }
         }
       }

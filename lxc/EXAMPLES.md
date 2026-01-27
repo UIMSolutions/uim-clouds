@@ -41,7 +41,7 @@ void main() {
 
 ```d
 import uim.lxc;
-import std.json : JSONValue;
+import std.json : Json;
 
 void main() {
   auto config = defaultConfig();

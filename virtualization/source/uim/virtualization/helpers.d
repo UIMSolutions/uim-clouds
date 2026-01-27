@@ -5,7 +5,7 @@
 *****************************************************************************************************************/
 module uim.virtualization.helpers;
 
-import std.json : JSONValue;
+import std.json : Json;
 import std.conv : to;
 import std.format : format;
 
@@ -15,97 +15,97 @@ import uim.virtualization.config;
 @safe:
 
 /// Creates a basic VM configuration
-JSONValue createVMConfig(
+Json createVMConfig(
   string name,
   int vcpuCount = 2,
   long memoryMB = 2048,
   string osType = "linux"
 ) {
-  JSONValue config = JSONValue([
-    "name": JSONValue(name),
-    "memory": JSONValue(memoryMB),
-    "vcpus": JSONValue(vcpuCount),
-    "os": JSONValue(["type": JSONValue(osType)])
+  Json config = Json([
+    "name": Json(name),
+    "memory": Json(memoryMB),
+    "vcpus": Json(vcpuCount),
+    "os": Json(["type": Json(osType)])
   ]);
   return config;
 }
 
 /// Creates a VM disk configuration
-JSONValue createVMDiskConfig(
+Json createVMDiskConfig(
   string sourcePath,
   string targetDevice = "vda",
   string type = "disk",
   string format = "qcow2",
   bool readonly = false
 ) {
-  JSONValue config = JSONValue([
-    "type": JSONValue(type),
-    "source": JSONValue(sourcePath),
-    "target": JSONValue(targetDevice),
-    "format": JSONValue(format),
-    "readonly": JSONValue(readonly)
+  Json config = Json([
+    "type": Json(type),
+    "source": Json(sourcePath),
+    "target": Json(targetDevice),
+    "format": Json(format),
+    "readonly": Json(readonly)
   ]);
   return config;
 }
 
 /// Creates a VM network interface configuration
-JSONValue createVMNICConfig(
+Json createVMNICConfig(
   string networkName,
   string model = "virtio",
   string macAddress = ""
 ) {
-  JSONValue config = JSONValue([
-    "type": JSONValue("network"),
-    "network": JSONValue(networkName),
-    "model": JSONValue(model)
+  Json config = Json([
+    "type": Json("network"),
+    "network": Json(networkName),
+    "model": Json(model)
   ]);
   
   if (macAddress.length > 0) {
-    config["mac"] = JSONValue(macAddress);
+    config["mac"] = Json(macAddress);
   }
   
   return config;
 }
 
 /// Creates a bridged network interface configuration
-JSONValue createBridgedNICConfig(
+Json createBridgedNICConfig(
   string bridgeName,
   string model = "virtio",
   string macAddress = ""
 ) {
-  JSONValue config = JSONValue([
-    "type": JSONValue("bridge"),
-    "source": JSONValue(bridgeName),
-    "model": JSONValue(model)
+  Json config = Json([
+    "type": Json("bridge"),
+    "source": Json(bridgeName),
+    "model": Json(model)
   ]);
   
   if (macAddress.length > 0) {
-    config["mac"] = JSONValue(macAddress);
+    config["mac"] = Json(macAddress);
   }
   
   return config;
 }
 
 /// Creates a NAT network configuration
-JSONValue createNATNetworkConfig(
+Json createNATNetworkConfig(
   string networkName,
   string ipv4Network = "192.168.122.0/24",
   bool enableDhcp = true
 ) {
-  JSONValue config = JSONValue([
-    "name": JSONValue(networkName),
-    "forward": JSONValue(["mode": JSONValue("nat")]),
-    "bridge": JSONValue(["name": JSONValue("virbr0")]),
-    "ip": JSONValue([
-      "address": JSONValue("192.168.122.1"),
-      "netmask": JSONValue("255.255.255.0")
+  Json config = Json([
+    "name": Json(networkName),
+    "forward": Json(["mode": Json("nat")]),
+    "bridge": Json(["name": Json("virbr0")]),
+    "ip": Json([
+      "address": Json("192.168.122.1"),
+      "netmask": Json("255.255.255.0")
     ])
   ]);
   
   if (enableDhcp) {
-    config["dhcp"] = JSONValue([
-      "start": JSONValue("192.168.122.2"),
-      "end": JSONValue("192.168.122.254")
+    config["dhcp"] = Json([
+      "start": Json("192.168.122.2"),
+      "end": Json("192.168.122.254")
     ]);
   }
   
@@ -113,17 +113,17 @@ JSONValue createNATNetworkConfig(
 }
 
 /// Creates a bridged network configuration
-JSONValue createBridgedNetworkConfig(
+Json createBridgedNetworkConfig(
   string networkName,
   string bridgeName = "br0",
   string bridgeType = "bridge"
 ) {
-  JSONValue config = JSONValue([
-    "name": JSONValue(networkName),
-    "forward": JSONValue(["mode": JSONValue("bridge")]),
-    "bridge": JSONValue([
-      "name": JSONValue(bridgeName),
-      "type": JSONValue(bridgeType)
+  Json config = Json([
+    "name": Json(networkName),
+    "forward": Json(["mode": Json("bridge")]),
+    "bridge": Json([
+      "name": Json(bridgeName),
+      "type": Json(bridgeType)
     ])
   ]);
   
@@ -131,81 +131,81 @@ JSONValue createBridgedNetworkConfig(
 }
 
 /// Creates a storage pool configuration for directory-based storage
-JSONValue createDirStoragePoolConfig(
+Json createDirStoragePoolConfig(
   string poolName,
   string path
 ) {
-  JSONValue config = JSONValue([
-    "name": JSONValue(poolName),
-    "type": JSONValue("dir"),
-    "target": JSONValue(["path": JSONValue(path)])
+  Json config = Json([
+    "name": Json(poolName),
+    "type": Json("dir"),
+    "target": Json(["path": Json(path)])
   ]);
   return config;
 }
 
 /// Creates a storage pool configuration for logical volume management
-JSONValue createLVMStoragePoolConfig(
+Json createLVMStoragePoolConfig(
   string poolName,
   string volumeGroup,
   string targetPath = "/dev"
 ) {
-  JSONValue config = JSONValue([
-    "name": JSONValue(poolName),
-    "type": JSONValue("logical"),
-    "source": JSONValue(["name": JSONValue(volumeGroup)]),
-    "target": JSONValue(["path": JSONValue(targetPath ~ "/" ~ volumeGroup)])
+  Json config = Json([
+    "name": Json(poolName),
+    "type": Json("logical"),
+    "source": Json(["name": Json(volumeGroup)]),
+    "target": Json(["path": Json(targetPath ~ "/" ~ volumeGroup)])
   ]);
   return config;
 }
 
 /// Creates a storage volume configuration
-JSONValue createStorageVolumeConfig(
+Json createStorageVolumeConfig(
   string volumeName,
   long sizeBytes,
   string format = "qcow2"
 ) {
-  JSONValue config = JSONValue([
-    "name": JSONValue(volumeName),
-    "capacity": JSONValue(sizeBytes),
-    "format": JSONValue(["type": JSONValue(format)])
+  Json config = Json([
+    "name": Json(volumeName),
+    "capacity": Json(sizeBytes),
+    "format": Json(["type": Json(format)])
   ]);
   return config;
 }
 
 /// Creates a storage volume from a backing store (CoW)
-JSONValue createCowVolumeConfig(
+Json createCowVolumeConfig(
   string volumeName,
   string backingStorePath,
   long sizeBytes = 0
 ) {
-  JSONValue config = JSONValue([
-    "name": JSONValue(volumeName),
-    "backingStore": JSONValue(["path": JSONValue(backingStorePath), "format": JSONValue("qcow2")])
+  Json config = Json([
+    "name": Json(volumeName),
+    "backingStore": Json(["path": Json(backingStorePath), "format": Json("qcow2")])
   ]);
   
   if (sizeBytes > 0) {
-    config["capacity"] = JSONValue(sizeBytes);
+    config["capacity"] = Json(sizeBytes);
   }
   
   return config;
 }
 
 /// Creates CPU configuration for a VM
-JSONValue createVMCPUConfig(
+Json createVMCPUConfig(
   int vCpuCount,
   string model = "host-passthrough",
   int sockets = 1,
   int cores = 2,
   int threads = 1
 ) {
-  JSONValue config = JSONValue([
-    "vcpus": JSONValue(vCpuCount),
-    "cpu": JSONValue([
-      "model": JSONValue(model),
-      "topology": JSONValue([
-        "sockets": JSONValue(sockets),
-        "cores": JSONValue(cores),
-        "threads": JSONValue(threads)
+  Json config = Json([
+    "vcpus": Json(vCpuCount),
+    "cpu": Json([
+      "model": Json(model),
+      "topology": Json([
+        "sockets": Json(sockets),
+        "cores": Json(cores),
+        "threads": Json(threads)
       ])
     ])
   ]);
@@ -213,56 +213,56 @@ JSONValue createVMCPUConfig(
 }
 
 /// Creates memory configuration for a VM
-JSONValue createVMMemoryConfig(
+Json createVMMemoryConfig(
   long memoryMB,
   long maxMemoryMB = 0
 ) {
-  JSONValue config = JSONValue([
-    "memory": JSONValue(memoryMB),
-    "unit": JSONValue("MiB")
+  Json config = Json([
+    "memory": Json(memoryMB),
+    "unit": Json("MiB")
   ]);
   
   if (maxMemoryMB > 0) {
-    config["maxMemory"] = JSONValue(maxMemoryMB);
+    config["maxMemory"] = Json(maxMemoryMB);
   }
   
   return config;
 }
 
 /// Creates console/serial port configuration
-JSONValue createConsoleConfig(
+Json createConsoleConfig(
   string type = "pty",
   int targetPort = 0
 ) {
-  JSONValue config = JSONValue([
-    "type": JSONValue(type),
-    "target": JSONValue(["port": JSONValue(targetPort)])
+  Json config = Json([
+    "type": Json(type),
+    "target": Json(["port": Json(targetPort)])
   ]);
   return config;
 }
 
 /// Creates UEFI/BIOS boot configuration
-JSONValue createBootConfig(
+Json createBootConfig(
   string firmware = "bios",
   string[] bootDevices = null
 ) {
-  JSONValue config = JSONValue([
-    "firmware": JSONValue(firmware)
+  Json config = Json([
+    "firmware": Json(firmware)
   ]);
   
   if (bootDevices && bootDevices.length > 0) {
-    JSONValue[] bootOrder;
+    Json[] bootOrder;
     foreach (device; bootDevices) {
-      bootOrder ~= JSONValue(["dev": JSONValue(device)]);
+      bootOrder ~= Json(["dev": Json(device)]);
     }
-    config["bootOrder"] = JSONValue(bootOrder);
+    config["bootOrder"] = Json(bootOrder);
   }
   
   return config;
 }
 
 /// Creates a complete KVM/QEMU VM template
-JSONValue createKVMVMTemplate(
+Json createKVMVMTemplate(
   string name,
   int vcpuCount = 4,
   long memoryMB = 4096,
@@ -270,31 +270,31 @@ JSONValue createKVMVMTemplate(
   string networkName = "default",
   string osType = "linux"
 ) {
-  JSONValue config = createVMConfig(name, vcpuCount, memoryMB, osType);
+  Json config = createVMConfig(name, vcpuCount, memoryMB, osType);
   
   // Add disk if provided
   if (diskPath.length > 0) {
-    JSONValue[] disks;
+    Json[] disks;
     disks ~= createVMDiskConfig(diskPath, "vda", "disk", "qcow2");
-    config["devices"] = JSONValue(["disk": JSONValue(disks)]);
+    config["devices"] = Json(["disk": Json(disks)]);
   }
   
   // Add network interface
-  JSONValue[] nics;
+  Json[] nics;
   nics ~= createVMNICConfig(networkName);
-  config["devices"]["interface"] = JSONValue(nics);
+  config["devices"]["interface"] = Json(nics);
   
   // Add console
-  config["devices"]["console"] = JSONValue([createConsoleConfig()]);
+  config["devices"]["console"] = Json([createConsoleConfig()]);
   
   // Add boot configuration
-  config["boot"] = JSONValue(createBootConfig("bios", ["disk", "cdrom"]));
+  config["boot"] = Json(createBootConfig("bios", ["disk", "cdrom"]));
   
   return config;
 }
 
 /// Creates a container-like lightweight VM
-JSONValue createLightweightVMTemplate(
+Json createLightweightVMTemplate(
   string name,
   long memoryMB = 512,
   int vcpuCount = 1
@@ -303,10 +303,10 @@ JSONValue createLightweightVMTemplate(
 }
 
 /// Merges two VM configurations
-JSONValue mergeVMConfigs(JSONValue baseConfig, JSONValue additionalConfig) {
-  JSONValue result = baseConfig;
+Json mergeVMConfigs(Json baseConfig, Json additionalConfig) {
+  Json result = baseConfig;
   
-  if (additionalConfig.type == JSONValue.Type.object) {
+  if (additionalConfig.type == Json.Type.object) {
     foreach (key, value; additionalConfig.object) {
       result[key] = value;
     }

@@ -7,7 +7,7 @@ module uim.lxc.client;
 
 import std.exception : enforce;
 import std.format : format;
-import std.json : JSONValue, parseJSON;
+import std.json : Json, parseJSON;
 import std.string : split;
 
 import vibe.http.client : HTTPClientRequest, HTTPClientResponse, requestHTTP;
@@ -57,12 +57,12 @@ class LXCClient {
   /// Lists all containers.
   Container[] listContainers() {
     string path = "/" ~ apiVersion ~ "/containers";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list containers: %d", response.statusCode));
 
     Container[] results;
     if (auto metadata = "metadata" in response.data.object) {
-      if (metadata.type == JSONValue.Type.array) {
+      if (metadata.type == Json.Type.array) {
         foreach (item; metadata.array) {
           results ~= Container(item);
         }
@@ -74,7 +74,7 @@ class LXCClient {
   /// Gets a single container by name.
   Container getContainer(string name) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ name;
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get container %s: %d", name, response.statusCode));
     
     if (auto metadata = "metadata" in response.data.object) {
@@ -86,7 +86,7 @@ class LXCClient {
   /// Gets detailed container state.
   ContainerState getContainerState(string name) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ name ~ "/state";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get container state: %d", response.statusCode));
     
     if (auto metadata = "metadata" in response.data.object) {
@@ -96,9 +96,9 @@ class LXCClient {
   }
 
   /// Creates a new container.
-  string createContainer(string name, JSONValue config) {
+  string createContainer(string name, Json config) {
     string path = "/" ~ apiVersion ~ "/containers";
-    config["name"] = JSONValue(name);
+    config["name"] = Json(name);
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 202, format("Failed to create container: %d", response.statusCode));
     
@@ -111,9 +111,9 @@ class LXCClient {
   /// Starts a container.
   string startContainer(string name, bool force = false) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ name ~ "/state";
-    JSONValue config = JSONValue(["action": JSONValue("start"), "timeout": JSONValue(30)]);
+    Json config = Json(["action": Json("start"), "timeout": Json(30)]);
     if (force) {
-      config["force"] = JSONValue(true);
+      config["force"] = Json(true);
     }
     auto response = doRequest("PUT", path, config);
     enforce(response.statusCode == 202, format("Failed to start container: %d", response.statusCode));
@@ -127,12 +127,12 @@ class LXCClient {
   /// Stops a container.
   string stopContainer(string name, int timeout = 30, bool force = false) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ name ~ "/state";
-    JSONValue config = JSONValue([
-      "action": JSONValue("stop"),
-      "timeout": JSONValue(timeout)
+    Json config = Json([
+      "action": Json("stop"),
+      "timeout": Json(timeout)
     ]);
     if (force) {
-      config["force"] = JSONValue(true);
+      config["force"] = Json(true);
     }
     auto response = doRequest("PUT", path, config);
     enforce(response.statusCode == 202, format("Failed to stop container: %d", response.statusCode));
@@ -146,7 +146,7 @@ class LXCClient {
   /// Restarts a container.
   string restartContainer(string name, int timeout = 30) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ name ~ "/state";
-    JSONValue config = JSONValue(["action": JSONValue("restart"), "timeout": JSONValue(timeout)]);
+    Json config = Json(["action": Json("restart"), "timeout": Json(timeout)]);
     auto response = doRequest("PUT", path, config);
     enforce(response.statusCode == 202, format("Failed to restart container: %d", response.statusCode));
     
@@ -159,7 +159,7 @@ class LXCClient {
   /// Freezes a container.
   string freezeContainer(string name) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ name ~ "/state";
-    JSONValue config = JSONValue(["action": JSONValue("freeze")]);
+    Json config = Json(["action": Json("freeze")]);
     auto response = doRequest("PUT", path, config);
     enforce(response.statusCode == 202, format("Failed to freeze container: %d", response.statusCode));
     
@@ -172,7 +172,7 @@ class LXCClient {
   /// Unfreezes a container.
   string unfreezeContainer(string name) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ name ~ "/state";
-    JSONValue config = JSONValue(["action": JSONValue("unfreeze")]);
+    Json config = Json(["action": Json("unfreeze")]);
     auto response = doRequest("PUT", path, config);
     enforce(response.statusCode == 202, format("Failed to unfreeze container: %d", response.statusCode));
     
@@ -185,7 +185,7 @@ class LXCClient {
   /// Removes a container.
   string removeContainer(string name, bool force = false) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ name;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 202, format("Failed to remove container: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
@@ -197,7 +197,7 @@ class LXCClient {
   /// Gets container logs.
   LogsResponse getContainerLogs(string name) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ name ~ "/logs";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get container logs: %d", response.statusCode));
     return LogsResponse(response.rawOutput);
   }
@@ -207,12 +207,12 @@ class LXCClient {
   /// Lists all available images or templates.
   Image[] listImages() {
     string path = "/" ~ apiVersion ~ "/images";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list images: %d", response.statusCode));
 
     Image[] results;
     if (auto metadata = "metadata" in response.data.object) {
-      if (metadata.type == JSONValue.Type.array) {
+      if (metadata.type == Json.Type.array) {
         foreach (item; metadata.array) {
           results ~= Image(item);
         }
@@ -224,7 +224,7 @@ class LXCClient {
   /// Gets information about an image.
   Image getImage(string fingerprint) {
     string path = "/" ~ apiVersion ~ "/images/" ~ fingerprint;
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get image: %d", response.statusCode));
     
     if (auto metadata = "metadata" in response.data.object) {
@@ -238,12 +238,12 @@ class LXCClient {
   /// Lists all networks.
   Network[] listNetworks() {
     string path = "/" ~ apiVersion ~ "/networks";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list networks: %d", response.statusCode));
 
     Network[] results;
     if (auto metadata = "metadata" in response.data.object) {
-      if (metadata.type == JSONValue.Type.array) {
+      if (metadata.type == Json.Type.array) {
         foreach (item; metadata.array) {
           results ~= Network(item);
         }
@@ -255,7 +255,7 @@ class LXCClient {
   /// Gets information about a network.
   Network getNetwork(string name) {
     string path = "/" ~ apiVersion ~ "/networks/" ~ name;
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get network: %d", response.statusCode));
     
     if (auto metadata = "metadata" in response.data.object) {
@@ -265,9 +265,9 @@ class LXCClient {
   }
 
   /// Creates a network.
-  string createNetwork(string name, JSONValue config) {
+  string createNetwork(string name, Json config) {
     string path = "/" ~ apiVersion ~ "/networks";
-    config["name"] = JSONValue(name);
+    config["name"] = Json(name);
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 202, format("Failed to create network: %d", response.statusCode));
     
@@ -280,7 +280,7 @@ class LXCClient {
   /// Removes a network.
   string removeNetwork(string name) {
     string path = "/" ~ apiVersion ~ "/networks/" ~ name;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 202, format("Failed to remove network: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
@@ -294,12 +294,12 @@ class LXCClient {
   /// Lists all storage pools.
   StoragePool[] listStoragePools() {
     string path = "/" ~ apiVersion ~ "/storage-pools";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list storage pools: %d", response.statusCode));
 
     StoragePool[] results;
     if (auto metadata = "metadata" in response.data.object) {
-      if (metadata.type == JSONValue.Type.array) {
+      if (metadata.type == Json.Type.array) {
         foreach (item; metadata.array) {
           results ~= StoragePool(item);
         }
@@ -311,7 +311,7 @@ class LXCClient {
   /// Gets storage pool information.
   StoragePool getStoragePool(string name) {
     string path = "/" ~ apiVersion ~ "/storage-pools/" ~ name;
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get storage pool: %d", response.statusCode));
     
     if (auto metadata = "metadata" in response.data.object) {
@@ -321,9 +321,9 @@ class LXCClient {
   }
 
   /// Creates a storage pool.
-  string createStoragePool(string name, JSONValue config) {
+  string createStoragePool(string name, Json config) {
     string path = "/" ~ apiVersion ~ "/storage-pools";
-    config["name"] = JSONValue(name);
+    config["name"] = Json(name);
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 202, format("Failed to create storage pool: %d", response.statusCode));
     
@@ -336,7 +336,7 @@ class LXCClient {
   /// Removes a storage pool.
   string removeStoragePool(string name) {
     string path = "/" ~ apiVersion ~ "/storage-pools/" ~ name;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 202, format("Failed to remove storage pool: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
@@ -350,12 +350,12 @@ class LXCClient {
   /// Lists snapshots for a container.
   Snapshot[] listSnapshots(string containerName) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ containerName ~ "/snapshots";
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list snapshots: %d", response.statusCode));
 
     Snapshot[] results;
     if (auto metadata = "metadata" in response.data.object) {
-      if (metadata.type == JSONValue.Type.array) {
+      if (metadata.type == Json.Type.array) {
         foreach (item; metadata.array) {
           results ~= Snapshot(item);
         }
@@ -367,9 +367,9 @@ class LXCClient {
   /// Creates a snapshot of a container.
   string createSnapshot(string containerName, string snapshotName, string description = "") {
     string path = "/" ~ apiVersion ~ "/containers/" ~ containerName ~ "/snapshots";
-    JSONValue config = JSONValue(["name": JSONValue(snapshotName)]);
+    Json config = Json(["name": Json(snapshotName)]);
     if (description.length > 0) {
-      config["description"] = JSONValue(description);
+      config["description"] = Json(description);
     }
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 202, format("Failed to create snapshot: %d", response.statusCode));
@@ -383,7 +383,7 @@ class LXCClient {
   /// Removes a snapshot.
   string removeSnapshot(string containerName, string snapshotName) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ containerName ~ "/snapshots/" ~ snapshotName;
-    auto response = doRequest("DELETE", path, JSONValue());
+    auto response = doRequest("DELETE", path, Json());
     enforce(response.statusCode == 202, format("Failed to remove snapshot: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
@@ -395,7 +395,7 @@ class LXCClient {
   /// Restores a container to a snapshot.
   string restoreSnapshot(string containerName, string snapshotName) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ containerName ~ "/snapshots/" ~ snapshotName ~ "/restore";
-    auto response = doRequest("POST", path, JSONValue());
+    auto response = doRequest("POST", path, Json());
     enforce(response.statusCode == 202, format("Failed to restore snapshot: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
@@ -409,7 +409,7 @@ class LXCClient {
   /// Gets operation status.
   Operation getOperation(string operationId) {
     string path = "/" ~ apiVersion ~ "/operations/" ~ operationId;
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get operation: %d", response.statusCode));
     
     if (auto metadata = "metadata" in response.data.object) {
@@ -421,7 +421,7 @@ class LXCClient {
   /// Waits for an operation to complete.
   bool waitOperation(string operationId, int timeout = 300) {
     string path = "/" ~ apiVersion ~ "/operations/" ~ operationId ~ "/wait?timeout=" ~ format("%d", timeout);
-    auto response = doRequest("GET", path, JSONValue());
+    auto response = doRequest("GET", path, Json());
     return response.statusCode == 200;
   }
 
@@ -429,16 +429,16 @@ class LXCClient {
 
   private struct HttpResponse {
     int statusCode;
-    JSONValue data;
+    Json data;
     string rawOutput;
   }
 
-  private HttpResponse doRequest(string method, string path, JSONValue body_) @system {
+  private HttpResponse doRequest(string method, string path, Json body_) @system {
     // This would be implemented with actual HTTP calls
     // For now, this is a placeholder that shows the structure
     HttpResponse response;
     response.statusCode = 200;
-    response.data = JSONValue();
+    response.data = Json();
     response.rawOutput = "";
     return response;
   }

@@ -31,16 +31,16 @@ writeln(pod.name);
 ### Create a resource
 ```d
 import uim.kubernetes;
-import std.json : JSONValue;
+import std.json : Json;
 
 auto client = KubernetesClient(apiServer, token);
-JSONValue podSpec = [
-  "apiVersion": JSONValue("v1"),
-  "kind": JSONValue("Pod"),
-  "metadata": JSONValue(["name": JSONValue("test-pod")]),
-  "spec": JSONValue([
-    "containers": JSONValue([
-      JSONValue(["name": JSONValue("app"), "image": JSONValue("nginx:latest")])
+Json podSpec = [
+  "apiVersion": Json("v1"),
+  "kind": Json("Pod"),
+  "metadata": Json(["name": Json("test-pod")]),
+  "spec": Json([
+    "containers": Json([
+      Json(["name": Json("app"), "image": Json("nginx:latest")])
     ])
   ])
 ];

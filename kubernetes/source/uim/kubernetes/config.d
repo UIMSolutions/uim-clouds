@@ -8,7 +8,7 @@ module uim.kubernetes.config;
 import std.conv : to;
 import std.exception : enforce;
 import std.file : exists, readText;
-import std.json : JSONValue, parseJSON;
+import std.json : Json, parseJSON;
 import std.path : buildPath, expandTilde;
 
 // Configuration for Kubernetes client authentication and API server access
@@ -57,7 +57,7 @@ KubernetesConfig loadKubeconfig(string path = "") @trusted {
   // Find cluster and context
   string currentContext = json["current-context"].str;
   auto contexts = json["contexts"].array;
-  JSONValue* activeCtx;
+  Json* activeCtx;
   foreach (ref ctx; contexts) {
     if (ctx["name"].str == currentContext) {
       activeCtx = &ctx;
@@ -68,7 +68,7 @@ KubernetesConfig loadKubeconfig(string path = "") @trusted {
 
   string clusterName = activeCtx.object["context"]["cluster"].str;
   auto clusters = json["clusters"].array;
-  JSONValue* activeCluster;
+  Json* activeCluster;
   foreach (ref cls; clusters) {
     if (cls["name"].str == clusterName) {
       activeCluster = &cls;
@@ -79,7 +79,7 @@ KubernetesConfig loadKubeconfig(string path = "") @trusted {
 
   KubernetesConfig cfg;
   cfg.apiServer = activeCluster.object["cluster"]["server"].str;
-  cfg.insecureSkipVerify = activeCluster.object["cluster"].object.get("insecure-skip-tls-verify", JSONValue(false)).type == JSONValue.Type.true_;
+  cfg.insecureSkipVerify = activeCluster.object["cluster"].object.get("insecure-skip-tls-verify", Json(false)).type == Json.Type.true_;
   if (auto caCert = "certificate-authority" in activeCluster.object["cluster"].object) {
     cfg.caCertPath = caCert.str;
   }
