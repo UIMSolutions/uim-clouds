@@ -1,10 +1,33 @@
-# UIM Kubernetes - Kubernetes API Client for D + vibe.d
+auto client = KubernetesClient("https://kubernetes.default:443", "my-sa-token");
+auto pods = client.listPods("default");
+auto client = KubernetesClient("https://kubernetes.default:443", "token");
+auto pod = client.getPod("default", "my-pod");
+writeln(pod.name);
+auto client = KubernetesClient(apiServer, token);
+Json podSpec = [
+  "apiVersion": Json("v1"),
+  "kind": Json("Pod"),
+  "metadata": Json(["name": Json("test-pod")]),
+  "spec": Json([
+    "containers": Json([
+      Json(["name": Json("app"), "image": Json("nginx:latest")])
+    ])
+  ])
+];
+client.createResource("v1", "pods", "default", podSpec);
+auto client = KubernetesClient(apiServer, token);
+auto watcher = client.watchPods("default");
+while (auto event = watcher.next()) {
+  writefln("Event: %s on %s", event.type, event.object["metadata"]["name"].str);
+}
+# UIM Kubernetes Library
 
-A lightweight Kubernetes client for D. Query and manage K8s resources (Pods, Deployments, Services, etc.), watch for changes, and interact with the Kubernetes API via vibe.d HTTP.
+A D language library for interacting with Kubernetes clusters using the uim-framework and vibe.d.
 
 ## Features
+
 - Kubernetes API HTTP client with vibe.d
-- Common resource types (Pod, Deployment, Service, ConfigMap, Secret, StatefulSet)
+- Manage common resource types: Pod, Deployment, Service, ConfigMap, Secret, StatefulSet
 - In-cluster and out-of-cluster authentication (service account tokens, kubeconfig)
 - Watch functionality for real-time resource events
 - JSON serialization/deserialization for K8s API responses
@@ -12,6 +35,7 @@ A lightweight Kubernetes client for D. Query and manage K8s resources (Pods, Dep
 ## Quick Start
 
 ### Initialize a client
+
 ```d
 import uim.kubernetes;
 
@@ -20,6 +44,7 @@ auto pods = client.listPods("default");
 ```
 
 ### Get a specific resource
+
 ```d
 import uim.kubernetes;
 
@@ -29,6 +54,7 @@ writeln(pod.name);
 ```
 
 ### Create a resource
+
 ```d
 import uim.kubernetes;
 import std.json : Json;
@@ -48,6 +74,7 @@ client.createResource("v1", "pods", "default", podSpec);
 ```
 
 ### Watch for events
+
 ```d
 import uim.kubernetes;
 
@@ -58,7 +85,9 @@ while (auto event = watcher.next()) {
 }
 ```
 
-## Modules
+## License
+
+Apache 2.0
 - `uim.kubernetes.client` – HTTP client and API calls
 - `uim.kubernetes.config` – Authentication and connection config
 - `uim.kubernetes.resources` – Common resource definitions
