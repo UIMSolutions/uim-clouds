@@ -8,9 +8,7 @@ module uim.kubernetes;
 public {
   import uim.core;
 
-  import uim.kubernetes.config;
-  import uim.kubernetes.resources;
-  import uim.kubernetes.client;
-  import uim.kubernetes.watch;
+  import uim.kubernetes.classes;
   import uim.kubernetes.helpers;
+  import uim.kubernetes.interfaces;
 }
