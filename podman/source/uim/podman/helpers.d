@@ -5,147 +5,147 @@
 *****************************************************************************************************************/
 module uim.podman.helpers;
 
-import std.json : JSONValue;
+import uim.podman;
 
 @safe:
 
 /// Creates a container config for a simple image run.
-JSONValue createContainerConfig(string image, string[] cmd = [], string[] env = []) {
-  JSONValue[] cmdArray;
+Json createContainerConfig(string image, string[] cmd = [], string[] env = []) {
+  Json[] cmdArray;
   foreach (c; cmd) {
-    cmdArray ~= JSONValue(c);
+    cmdArray ~= Json(c);
   }
 
-  JSONValue[] envArray;
+  Json[] envArray;
   foreach (e; env) {
-    envArray ~= JSONValue(e);
+    envArray ~= Json(e);
   }
 
-  JSONValue config = JSONValue([
-    "Image": JSONValue(image),
-    "Cmd": JSONValue(cmdArray),
-    "Env": JSONValue(envArray)
+  Json config = Json([
+    "Image": Json(image),
+    "Cmd": Json(cmdArray),
+    "Env": Json(envArray)
   ]);
   return config;
 }
 
 /// Creates port bindings for container.
-JSONValue createPortBindings(string[string] portMap) {
-  JSONValue[string] bindings;
+Json createPortBindings(string[string] portMap) {
+  Json[string] bindings;
   foreach (containerPort, hostPort; portMap) {
-    bindings[containerPort] = JSONValue([
-      JSONValue([
-        "HostPort": JSONValue(hostPort)
+    bindings[containerPort] = Json([
+      Json([
+        "HostPort": Json(hostPort)
       ])
     ]);
   }
-  return JSONValue(bindings);
+  return Json(bindings);
 }
 
 /// Creates volume mounts for container.
-JSONValue createVolumeMounts(string[string] mounts) {
-  JSONValue[] volumeList;
+Json createVolumeMounts(string[string] mounts) {
+  Json[] volumeList;
   foreach (containerPath, hostPath; mounts) {
-    volumeList ~= JSONValue([
-      "Source": JSONValue(hostPath),
-      "Target": JSONValue(containerPath),
-      "Type": JSONValue("bind")
+    volumeList ~= Json([
+      "Source": Json(hostPath),
+      "Target": Json(containerPath),
+      "Type": Json("bind")
     ]);
   }
-  return JSONValue(volumeList);
+  return Json(volumeList);
 }
 
 /// Creates environment variables array from key-value pairs.
-JSONValue createEnvironment(string[string] envMap) {
-  JSONValue[] envArray;
+Json createEnvironment(string[string] envMap) {
+  Json[] envArray;
   foreach (key, value; envMap) {
-    envArray ~= JSONValue(key ~ "=" ~ value);
+    envArray ~= Json(key ~ "=" ~ value);
   }
-  return JSONValue(envArray);
+  return Json(envArray);
 }
 
 /// Creates a pod config for a simple pod creation.
-JSONValue createPodConfig(string name, string[] portBindings = []) {
-  JSONValue[] ports;
+Json createPodConfig(string name, string[] portBindings = []) {
+  Json[] ports;
   foreach (port; portBindings) {
-    ports ~= JSONValue(port);
+    ports ~= Json(port);
   }
 
-  JSONValue config = JSONValue([
-    "Name": JSONValue(name),
-    "Share": JSONValue(["pid", "ipc", "uts"])
+  Json config = Json([
+    "Name": Json(name),
+    "Share": Json(["pid", "ipc", "uts"])
   ]);
   
   if (ports.length > 0) {
-    config["PortMappings"] = JSONValue(ports);
+    config["PortMappings"] = Json(ports);
   }
   
   return config;
 }
 
 /// Creates network settings for container.
-JSONValue createNetworkSettings(string networkName, string ipAddress = "", string gateway = "") {
-  JSONValue settings = JSONValue([
-    "EndpointsConfig": JSONValue([
-      networkName: JSONValue([
-        "IPAMConfig": JSONValue(JSONValue(null))
+Json createNetworkSettings(string networkName, string ipAddress = "", string gateway = "") {
+  Json settings = Json([
+    "EndpointsConfig": Json([
+      networkName: Json([
+        "IPAMConfig": Json(Json(null))
       ])
     ])
   ]);
   
   if (ipAddress.length > 0) {
-    settings["EndpointsConfig"][networkName]["IPAMConfig"] = JSONValue([
-      "IPv4Address": JSONValue(ipAddress)
+    settings["EndpointsConfig"][networkName]["IPAMConfig"] = Json([
+      "IPv4Address": Json(ipAddress)
     ]);
   }
   
   return settings;
 }
 
-/// Converts string array to JSONValue array.
-JSONValue stringArrayToJSON(string[] array) {
-  JSONValue[] result;
+/// Converts string array to Json array.
+Json stringArrayToJSON(string[] array) {
+  Json[] result;
   foreach (item; array) {
-    result ~= JSONValue(item);
+    result ~= Json(item);
   }
-  return JSONValue(result);
+  return Json(result);
 }
 
-/// Converts string map to JSONValue object.
-JSONValue stringMapToJSON(string[string] map) {
-  JSONValue[string] result;
+/// Converts string map to Json object.
+Json stringMapToJSON(string[string] map) {
+  Json[string] result;
   foreach (key, value; map) {
-    result[key] = JSONValue(value);
+    result[key] = Json(value);
   }
-  return JSONValue(result);
+  return Json(result);
 }
 
 /// Creates resource limits for container.
-JSONValue createResourceLimits(long memoryBytes = 0, long cpuNanos = 0, long cpuShares = 1024) {
-  JSONValue limits = JSONValue([
-    "MemorySwap": JSONValue(-1),
-    "CpuShares": JSONValue(cpuShares)
+Json createResourceLimits(long memoryBytes = 0, long cpuNanos = 0, long cpuShares = 1024) {
+  Json limits = Json([
+    "MemorySwap": Json(-1),
+    "CpuShares": Json(cpuShares)
   ]);
   
   if (memoryBytes > 0) {
-    limits["Memory"] = JSONValue(memoryBytes);
+    limits["Memory"] = Json(memoryBytes);
   }
   
   if (cpuNanos > 0) {
-    limits["CpuNano"] = JSONValue(cpuNanos);
+    limits["CpuNano"] = Json(cpuNanos);
   }
   
   return limits;
 }
 
 /// Creates health check configuration.
-JSONValue createHealthCheck(string[] testCmd, int interval = 30, int timeout = 10, int retries = 3, int startPeriod = 0) {
-  JSONValue healthCheck = JSONValue([
-    "Test": JSONValue(testCmd),
-    "Interval": JSONValue(interval * 1_000_000_000L),  // Convert to nanoseconds
-    "Timeout": JSONValue(timeout * 1_000_000_000L),
-    "Retries": JSONValue(retries),
-    "StartPeriod": JSONValue(startPeriod * 1_000_000_000L)
+Json createHealthCheck(string[] testCmd, int interval = 30, int timeout = 10, int retries = 3, int startPeriod = 0) {
+  Json healthCheck = Json([
+    "Test": Json(testCmd),
+    "Interval": Json(interval * 1_000_000_000L),  // Convert to nanoseconds
+    "Timeout": Json(timeout * 1_000_000_000L),
+    "Retries": Json(retries),
+    "StartPeriod": Json(startPeriod * 1_000_000_000L)
   ]);
   return healthCheck;
 }
