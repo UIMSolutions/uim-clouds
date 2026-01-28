@@ -42,7 +42,7 @@ class DockerClient {
     Container[] results;
     if (response.data.type == Json.Type.array) {
       foreach (item; response.data.array) {
-        results ~= Container(item);
+        results ~= new Container(item);
       }
     }
     return results;
@@ -53,7 +53,7 @@ class DockerClient {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/json";
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get container %s: %d", idOrName, response.statusCode));
-    return Container(response.data);
+    return new Container(response.data);
   }
 
   /// Creates a new container.
@@ -121,7 +121,7 @@ class DockerClient {
     if (auto volumesObj = "Volumes" in response.data.object) {
       if (volumesObj.type == Json.Type.array) {
         foreach (vol; volumesObj.array) {
-          results ~= Volume(vol);
+          results ~= new Volume(vol);
         }
       }
     }
@@ -135,9 +135,8 @@ class DockerClient {
     enforce(response.statusCode == 200, format("Failed to list networks: %d", response.statusCode));
 
     Network[] results;
-    if (response.data.type == Json.Type.array) {
-      foreach (item; response.data.array) {
-        results ~= Network(item);
+    if (response.data.isArray) {
+      results = response.data.array.map(res => new Network(item));
       }
     }
     return results;
@@ -146,15 +145,13 @@ class DockerClient {
   /// Creates an exec instance in a container.
   string createExec(string containerId, string[] cmd) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ containerId ~ "/exec";
-    auto cmdArray = Json([]);
-    foreach (arg; cmd) {
-      cmdArray.array ~= Json(arg);
-    }
-    Json config = Json(["Cmd": cmdArray]);
+    auto cmdArray = cmd.map!(arg => Json(arg)).array;
+    
+    Json config = ["Cmd": cmdArray].toJson;
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create exec: %d", response.statusCode));
     if (auto id = "Id" in response.data.object) {
-      return id.str;
+      return id.to!string;
     }
     return "";
   }
