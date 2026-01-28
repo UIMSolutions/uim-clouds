@@ -1,4 +1,4 @@
-/****************************************************************************************************************
+8/****************************************************************************************************************
 * Copyright: © 2018-2026 Ozan Nurettin Süel (aka UIManufaktur)
 * License: Subject to the terms of the Apache 2.0 license, as written in the included LICENSE.txt file.
 * Authors: Ozan Nurettin Süel (aka UIManufaktur)
@@ -89,7 +89,7 @@ class KVMClient {
     enforce(resp.statusCode == 200, format("Failed to list snapshots: %d", resp.statusCode));
     KVMSnapshot[] result;
     if (auto arr = "snapshots" in resp.data.object) {
-      if (arr.type == Json.Type.array) foreach(item; arr.array) result ~= KVMSnapshot(item);
+      if (arr.isArray) foreach(item; arr.array) result ~= new KVMSnapshot(item);
     }
     return result;
   }
@@ -140,7 +140,7 @@ class KVMClient {
     enforce(resp.statusCode == 200, format("Failed to list networks: %d", resp.statusCode));
     KVMNetwork[] result;
     if (auto arr = "networks" in resp.data.object) {
-      if (arr.type == Json.Type.array) foreach(item; arr.array) result ~= KVMNetwork(item);
+      if (arr.isArray) foreach(item; arr.array) result ~= new KVMNetwork(item);
     }
     return result;
   }
