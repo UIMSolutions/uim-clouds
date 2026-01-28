@@ -5,15 +5,7 @@
 *****************************************************************************************************************/
 module uim.kvm.client;
 
-import std.exception : enforce;
-import std.format : format;
-import std.json : Json;
-
-import vibe.http.client : requestHTTP;
-import vibe.stream.operations : readAllUTF8;
-
-import uim.kvm.config;
-import uim.kvm.resources;
+import uim.kvm;
 
 @trusted:
 
@@ -31,9 +23,8 @@ class KVMClient {
     enforce(resp.statusCode == 200, format("Failed to list domains: %d", resp.statusCode));
     KVMDomain[] result;
     if (auto arr = "domains" in resp.data.object) {
-      if (arr.type == Json.Type.array) {
-        foreach (item; arr.array) result ~= KVMDomain(item);
-      }
+      if (arr.isArray) {
+        result = arr.toArray.map!(ıtem =>  KVMDomain(item));
     }
     return result;
   }
@@ -49,8 +40,7 @@ class KVMClient {
   string defineDomain(Json domainDefn) {
     auto resp = doRequest("POST", "/domains", domainDefn);
     enforce(resp.statusCode == 201, format("Failed to define domain: %d", resp.statusCode));
-    if (auto id = "id" in resp.data.object) return id.str;
-    return "";
+    return resp.data.getStrımg("id");
   }
 
   /// Start domain
