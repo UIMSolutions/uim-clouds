@@ -37,8 +37,7 @@ class K8SClient {
     enforce(response.statusCode == 200, format("Failed to list %s: %d", kind, response.statusCode));
 
     auto items = response.data["items"].array;
-    K8SResource[] results = items.map!((item => new K8SResource(item))).array;
-    return results;
+    return items.map!(item => new K8SResource(item)).array;
   }
 
   /// Gets a single resource by name.
@@ -75,11 +74,7 @@ class K8SClient {
   /// Lists Pods in a namespace.
   K8SPod[] listPods(string namespace_ = "default") {
     auto resources = listResources("v1", "pods", namespace_);
-    K8SPod[] pods;
-    foreach (res; resources) {
-      pods ~= new K8SPod(res);
-    }
-    return pods;
+    return resources.map!(res => new K8SPod(res)).array;
   }
 
   /// Gets a single Pod.
