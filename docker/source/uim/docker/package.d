@@ -6,7 +6,7 @@
 module uim.docker;
 
 public {
-  import uim.core;
+  import uim.oop;
 
   import uim.docker.config;
   import uim.docker.resources;
