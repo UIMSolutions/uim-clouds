@@ -31,7 +31,7 @@ class DockerClient {
   }
 
   /// Lists all containers.
-  Container[] listContainers(bool all = false) {
+  DockerContainer[] listContainers(bool all = false) {
     string path = "/" ~ apiVersion ~ "/containers/json";
     if (all) {
       path ~= "?all=true";
@@ -39,13 +39,8 @@ class DockerClient {
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list containers: %d", response.statusCode));
 
-    Container[] results;
-    if (response.data.type == Json.Type.array) {
-      foreach (item; response.data.array) {
-        results ~= new Container(item);
-      }
-    }
-    return results;
+    return response.data.type == Json.Type.array ?
+       response.data.array.map!(res => new DockerContainer(item)) : null
   }
 
   /// Gets a single container by ID or name.
@@ -101,14 +96,9 @@ class DockerClient {
     string path = "/" ~ apiVersion ~ "/images/json";
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list images: %d", response.statusCode));
-
-    Image[] results;
-    if (response.data.type == Json.Type.array) {
-      foreach (item; response.data.array) {
-        results ~= Image(item);
-      }
-    }
-    return results;
+    
+    return response.data.isArray ? 
+      response.data.toArray.map!(item => new DockerImage(item) : null;
   }
 
   /// Lists all volumes.
