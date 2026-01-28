@@ -7,7 +7,6 @@ module uim.kubernetes.classes.client;
 
 import uim.kubernetes;
 @safe:
-@trusted:
 
 /// Kubernetes API HTTP client.
 class K8SClient {
