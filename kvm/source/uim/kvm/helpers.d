@@ -5,8 +5,7 @@
 *****************************************************************************************************************/
 module uim.kvm.helpers;
 
-import std.json : Json;
-import std.format : format;
+import uim.kvm;
 
 @safe:
 
@@ -30,27 +29,27 @@ Json createDomainDefinition(
 
 /// Snapshot definition helper
 Json createSnapshotDefinition(string name, string description = "") {
-  Json defn = Json(["name": Json(name)]);
-  if (description.length > 0) defn["description"] = Json(description);
+  Json defn = ["name": name].toJson;
+  if (description.length > 0) defn["description"] = description;
   return defn;
 }
 
 /// Storage pool definition helper
 Json createStoragePoolDefinition(string name, string type = "dir", string path = "/var/lib/libvirt/images") {
   return Json([
-    "name": Json(name),
-    "type": Json(type),
-    "path": Json(path)
-  ]);
+    "name": name,
+    "type": type,
+    "path": path
+  ].toJson);
 }
 
 /// Network definition helper
 Json createNetworkDefinition(string name, string mode = "nat", string bridge = "virbr0") {
   return Json([
-    "name": Json(name),
-    "mode": Json(mode),
-    "bridge": Json(bridge)
-  ]);
+    "name": name,
+    "mode": mode,
+    "bridge": bridge
+  ].toJson);
 }
 
 /// Pretty print memory in MiB
