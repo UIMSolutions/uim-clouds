@@ -5,15 +5,7 @@
 *****************************************************************************************************************/
 module uim.virtualization.client;
 
-import std.exception : enforce;
-import std.format : format;
-import std.json : Json, parseJSON;
-
-import vibe.http.client : HTTPClientRequest, HTTPClientResponse, requestHTTP;
-import vibe.stream.operations : readAllUTF8;
-
-import uim.virtualization.config;
-import uim.virtualization.resources;
+import uim.virtualization;
 
 @trusted:
 
@@ -64,7 +56,7 @@ class VirtualizationClient {
 
     VirtualMachine[] results;
     if (auto domains = "domains" in response.data.object) {
-      if (domains.type == Json.Type.array) {
+      if (domains.isArray) {
         foreach (item; domains.array) {
           results ~= VirtualMachine(item);
         }
@@ -157,7 +149,7 @@ class VirtualizationClient {
 
     VirtualDisk[] results;
     if (auto disks = "disks" in response.data.object) {
-      if (disks.type == Json.Type.array) {
+      if (disks.isArray) {
         foreach (item; disks.array) {
           results ~= VirtualDisk(item);
         }
@@ -190,7 +182,7 @@ class VirtualizationClient {
 
     VirtualNIC[] results;
     if (auto nics = "interfaces" in response.data.object) {
-      if (nics.type == Json.Type.array) {
+      if (nics.isArray) {
         foreach (item; nics.array) {
           results ~= VirtualNIC(item);
         }
@@ -223,7 +215,7 @@ class VirtualizationClient {
 
     Snapshot[] results;
     if (auto snapshots = "snapshots" in response.data.object) {
-      if (snapshots.type == Json.Type.array) {
+      if (snapshots.isArray) {
         foreach (item; snapshots.array) {
           results ~= Snapshot(item);
         }
@@ -273,7 +265,7 @@ class VirtualizationClient {
 
     StoragePool[] results;
     if (auto pools = "pools" in response.data.object) {
-      if (pools.type == Json.Type.array) {
+      if (pools.isArray) {
         foreach (item; pools.array) {
           results ~= StoragePool(item);
         }
