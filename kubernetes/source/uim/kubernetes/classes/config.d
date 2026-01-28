@@ -5,7 +5,7 @@ import uim.kubernetes;
 @safe:
 // ConfigMap resource
 struct ConfigMap {
-  KubernetesResource resource;
+  K8SResource resource;
 
   string name() const {
     return resource.name();

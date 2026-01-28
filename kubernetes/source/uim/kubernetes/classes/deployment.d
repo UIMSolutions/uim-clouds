@@ -4,8 +4,8 @@ import uim.kubernetes;
 
 @safe:
 // Deployment resource
-struct Deployment {
-  KubernetesResource resource;
+class K8SDeployment {
+  K8SResource resource;
 
   string name() const {
     return resource.name();

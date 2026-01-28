@@ -5,11 +5,8 @@
 *****************************************************************************************************************/
 module uim.kubernetes.config;
 
-import std.conv : to;
-import std.exception : enforce;
-import std.file : exists, readText;
-import std.json : Json, parseJSON;
-import std.path : buildPath, expandTilde;
+import kubernetes;
+@safe:
 
 // Configuration for Kubernetes client authentication and API server access
 struct KubernetesConfig {

@@ -1,8 +1,8 @@
 module uim.kubernetes.classes.pod;
 
 // Pod resource
-struct Pod {
-  KubernetesResource resource;
+class K8SPod {
+  K8SResource resource;
 
   string name() const {
     return resource.name();

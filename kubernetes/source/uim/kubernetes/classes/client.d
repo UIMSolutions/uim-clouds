@@ -10,7 +10,7 @@ import uim.kubernetes;
 @trusted:
 
 /// Kubernetes API HTTP client.
-class KubernetesClient {
+class K8SClient {
   private string apiServer;
   private string token;
   private bool insecureSkipVerify;
@@ -31,41 +31,41 @@ class KubernetesClient {
   }
 
   /// Lists resources of a given kind in a namespace.
-  KubernetesResource[] listResources(string apiVersion, string kind, string namespace_) {
+  K8SResource[] listResources(string apiVersion, string kind, string namespace_) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind;
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list %s: %d", kind, response.statusCode));
 
     auto items = response.data["items"].array;
-    KubernetesResource[] results;
+    K8SResource[] results;
     foreach (item; items) {
-      results ~= KubernetesResource(item);
+      results ~= K8SResource(item);
     }
     return results;
   }
 
   /// Gets a single resource by name.
-  KubernetesResource getResource(string apiVersion, string kind, string namespace_, string name) {
+  K8SResource getResource(string apiVersion, string kind, string namespace_, string name) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind ~ "/" ~ name;
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get %s %s: %d", kind, name, response.statusCode));
-    return KubernetesResource(response.data);
+    return K8SResource(response.data);
   }
 
   /// Creates a new resource.
-  KubernetesResource createResource(string apiVersion, string kind, string namespace_, Json spec) {
+  K8SResource createResource(string apiVersion, string kind, string namespace_, Json spec) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind;
     auto response = doRequest("POST", path, spec);
     enforce(response.statusCode == 201, format("Failed to create %s: %d", kind, response.statusCode));
-    return KubernetesResource(response.data);
+    return K8SResource(response.data);
   }
 
   /// Updates an existing resource.
-  KubernetesResource updateResource(string apiVersion, string kind, string namespace_, string name, Json spec) {
+  K8SResource updateResource(string apiVersion, string kind, string namespace_, string name, Json spec) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind ~ "/" ~ name;
     auto response = doRequest("PUT", path, spec);
     enforce(response.statusCode == 200, format("Failed to update %s %s: %d", kind, name, response.statusCode));
-    return KubernetesResource(response.data);
+    return K8SResource(response.data);
   }
 
   /// Deletes a resource.
@@ -76,73 +76,73 @@ class KubernetesClient {
   }
 
   /// Lists Pods in a namespace.
-  Pod[] listPods(string namespace_ = "default") {
+  K8SPod[] listPods(string namespace_ = "default") {
     auto resources = listResources("v1", "pods", namespace_);
-    Pod[] pods;
+    K8SPod[] pods;
     foreach (res; resources) {
-      pods ~= Pod(res);
+      pods ~= K8SPod(res);
     }
     return pods;
   }
 
   /// Gets a single Pod.
-  Pod getPod(string namespace_, string name) {
-    return Pod(getResource("v1", "pods", namespace_, name));
+  K8SPod getPod(string namespace_, string name) {
+    return K8SPod(getResource("v1", "pods", namespace_, name));
   }
 
   /// Lists Deployments in a namespace.
-  Deployment[] listDeployments(string namespace_ = "default") {
+  K8SDeployment[] listDeployments(string namespace_ = "default") {
     auto resources = listResources("apps/v1", "deployments", namespace_);
-    Deployment[] deploys;
+    K8SDeployment[] deploys;
     foreach (res; resources) {
-      deploys ~= Deployment(res);
+      deploys ~= K8SDeployment(res);
     }
     return deploys;
   }
 
   /// Gets a single Deployment.
-  Deployment getDeployment(string namespace_, string name) {
-    return Deployment(getResource("apps/v1", "deployments", namespace_, name));
+  K8SDeployment getDeployment(string namespace_, string name) {
+    return K8SDeployment(getResource("apps/v1", "deployments", namespace_, name));
   }
 
   /// Lists Services in a namespace.
-  Service[] listServices(string namespace_ = "default") {
+  K8SService[] listServices(string namespace_ = "default") {
     auto resources = listResources("v1", "services", namespace_);
-    Service[] services;
+    K8SService[] services;
     foreach (res; resources) {
-      services ~= Service(res);
+      services ~= K8SService(res);
     }
     return services;
   }
 
   /// Gets a single Service.
-  Service getService(string namespace_, string name) {
-    return Service(getResource("v1", "services", namespace_, name));
+  K8SService getService(string namespace_, string name) {
+    return K8SService(getResource("v1", "services", namespace_, name));
   }
 
   /// Lists ConfigMaps in a namespace.
-  ConfigMap[] listConfigMaps(string namespace_ = "default") {
+  K8SConfigMap[] listConfigMaps(string namespace_ = "default") {
     auto resources = listResources("v1", "configmaps", namespace_);
-    ConfigMap[] cms;
+    K8SConfigMap[] cms;
     foreach (res; resources) {
-      cms ~= ConfigMap(res);
+      cms ~= K8SConfigMap(res);
     }
     return cms;
   }
 
   /// Gets a single ConfigMap.
-  ConfigMap getConfigMap(string namespace_, string name) {
-    return ConfigMap(getResource("v1", "configmaps", namespace_, name));
+  K8SConfigMap getConfigMap(string namespace_, string name) {
+    return K8SConfigMap(getResource("v1", "configmaps", namespace_, name));
   }
 
   /// Watches for events on a resource kind.
-  KubernetesWatcher watchResources(string apiVersion, string kind, string namespace_) {
+  K8SWatcher watchResources(string apiVersion, string kind, string namespace_) {
     string path = "/api/" ~ apiVersion ~ "/watch/namespaces/" ~ namespace_ ~ "/" ~ kind;
-    return KubernetesWatcher(this, path);
+    return K8SWatcher(this, path);
   }
 
   /// Watches Pods in a namespace.
-  KubernetesWatcher watchPods(string namespace_ = "default") {
+  K8SWatcher watchPods(string namespace_ = "default") {
     return watchResources("v1", "pods", namespace_);
   }
 

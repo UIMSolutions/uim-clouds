@@ -5,13 +5,7 @@
 *****************************************************************************************************************/
 module uim.kubernetes.classes.watch;
 
-import std.json : Json, JSONType, parseJSON;
-import std.string : split;
-
-import vibe.http.client : HTTPClientRequest, HTTPClientResponse, requestHTTP;
-import vibe.stream.operations : readAllUTF8;
-
-import uim.kubernetes.client;
+import uim.kubernetes;
 
 @trusted:
 
@@ -22,12 +16,12 @@ struct WatchEvent {
 }
 
 /// Watches a Kubernetes resource stream.
-class KubernetesWatcher {
-  private KubernetesClient client;
+class K8SWatcher {
+  private K8SClient client;
   private string path;
   private bool closed = false;
 
-  this(KubernetesClient client, string path) {
+  this(K8SClient client, string path) {
     this.client = client;
     this.path = path;
   }

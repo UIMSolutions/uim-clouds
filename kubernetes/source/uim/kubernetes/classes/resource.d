@@ -1,7 +1,7 @@
 module uim.kubernetes.classes.resource;
 
 // Common Kubernetes resource wrapper
-struct KubernetesResource {
+class K8SResource {
   Json data;
 
   string name() const @trusted {

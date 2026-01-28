@@ -1,8 +1,8 @@
 module uim.kubernetes.classes.service;
 
 // Service resource
-struct Service {
-  KubernetesResource resource;
+class K8SService {
+  K8SResource resource;
 
   string name() const {
     return resource.name();

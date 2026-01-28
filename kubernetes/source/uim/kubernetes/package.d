@@ -6,7 +6,7 @@
 module uim.kubernetes;
 
 public {
-import uim.framework;
+import uim.oop;
 
   import uim.kubernetes.classes;
   import uim.kubernetes.helpers;
