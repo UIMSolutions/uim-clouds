@@ -5,18 +5,9 @@
 *****************************************************************************************************************/
 module uim.docker.client;
 
-import std.exception : enforce;
-import std.format : format;
-import std.json : Json, parseJSON;
-import std.string : split;
+import uim.docker;
 
-import vibe.http.client : HTTPClientRequest, HTTPClientResponse, requestHTTP;
-import vibe.stream.operations : readAllUTF8;
-
-import uim.docker.config;
-import uim.docker.resources;
-
-@trusted:
+@safe:
 
 /// Docker API HTTP client.
 class DockerClient {
