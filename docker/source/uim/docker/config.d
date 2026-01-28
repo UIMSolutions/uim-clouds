@@ -34,10 +34,8 @@ bool isUnixSocket(string endpoint) @safe {
 
 /// Extracts socket path from Unix endpoint.
 string getUnixSocketPath(string endpoint) @safe {
-  if (isUnixSocket(endpoint)) {
-    return endpoint[7 .. $];  // Strip "unix://"
-  }
-  return "";
+  return isUnixSocket(endpoint)) ?
+    endpoint[7 .. $];  // Strip "unix://" : "";
 }
 
 /// Checks if endpoint is TCP.
@@ -47,8 +45,6 @@ bool isTcpEndpoint(string endpoint) @safe {
 
 /// Extracts TCP URL from endpoint.
 string getTcpUrl(string endpoint) @safe {
-  if (isTcpEndpoint(endpoint)) {
-    return endpoint;
-  }
-  return "";
+  return isTcpEndpoint(endpoint) ?
+    endpoint : "";
 }
