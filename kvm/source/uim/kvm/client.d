@@ -11,29 +11,25 @@ import uim.kvm;
 
 /// KVM/libvirt client
 class KVMClient {
-  private KVMConfig config;
+  protected KVMConfig _config;
 
   this(KVMConfig config) {
-    this.config = config;
+    _config = config;
   }
 
   /// List domains
   KVMDomain[] listDomains() {
     auto resp = doRequest("GET", "/domains", Json());
     enforce(resp.statusCode == 200, format("Failed to list domains: %d", resp.statusCode));
-    KVMDomain[] result;
-    if (auto arr = "domains" in resp.data.object) {
-      if (arr.isArray) {
-        result = arr.toArray.map!(ıtem =>  KVMDomain(item));
-    }
-    return result;
+    
+    return resp.data.getArray("domains").toArray.map!(ıtem => new KVMDomain(item));
   }
 
   /// Get a domain
   KVMDomain getDomain(string nameOrId) {
     auto resp = doRequest("GET", "/domains/" ~ nameOrId, Json());
     enforce(resp.statusCode == 200, format("Failed to get domain: %d", resp.statusCode));
-    return KVMDomain(resp.data);
+    return new KVMDomain(resp.data);
   }
 
   /// Define (create) a domain from definition
@@ -70,7 +66,7 @@ class KVMClient {
   /// Undefine domain (optionally wipe disks)
   void undefineDomain(string nameOrId, bool removeStorage = false) {
     string path = "/domains/" ~ nameOrId;
-    if (removeStorage) path ~= "?wipeStorage=true";
+    path ~= removeStorage ? "?wipeStorage=true" : "";
     auto resp = doRequest("DELETE", path, Json());
     enforce(resp.statusCode == 204, format("Failed to undefine domain: %d", resp.statusCode));
   }
@@ -171,13 +167,13 @@ class KVMClient {
     auto resp = doRequest("GET", "/host", Json());
     enforce(resp.statusCode == 200, format("Failed to get host info: %d", resp.statusCode));
     KVMHostInfo info;
-    if (auto host = "hostname" in resp.data.object) info.hostname = host.str;
-    if (auto sockets = "sockets" in resp.data.object) info.cpuSockets = cast(int)sockets.integer;
-    if (auto cores = "cores" in resp.data.object) info.cpuCores = cast(int)cores.integer;
+    if (auto host = "hostname" in resp.data.object) info.hostname = host.toString;
+    if (auto sockets = "sockets" in resp.data.object) info.cpuSockets = cast(int)sockets.toInteger;
+    if (auto cores = "cores" in resp.data.object) info.cpuCores = cast(int)cores.toInteger;
     if (auto threads = "threads" in resp.data.object) info.cpuThreads = cast(int)threads.integer;
     if (auto mem = "memory" in resp.data.object) info.memoryKiB = mem.integer;
     if (auto lv = "libvirt_version" in resp.data.object) info.libvirtVersion = lv.str;
-    if (auto hv = "hypervisor_version" in resp.data.object) info.hypervisorVersion = hv.str;
+    if (auto hv = "hypervisor_version" in resp.data.object) info.hypervisorVersion = hv.getString;
     return info;
   }
 
@@ -191,7 +187,7 @@ class KVMClient {
     // Placeholder for libvirt RPC or REST bridge integration
     HttpResponse resp;
     resp.statusCode = 200;
-    resp.data = Json();
+    resp.data = Json.emptyObject;
     return resp;
   }
 }
