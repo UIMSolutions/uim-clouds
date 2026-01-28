@@ -6,7 +6,7 @@
 module uim.kubernetes.classes.client;
 
 import uim.kubernetes;
-
+@safe:
 @trusted:
 
 /// Kubernetes API HTTP client.
@@ -23,7 +23,7 @@ class K8SClient {
     this.caCertPath = caCertPath;
   }
 
-  this(KubernetesConfig config) {
+  this(K8SConfig config) {
     this.apiServer = config.apiServer;
     this.token = config.token;
     this.insecureSkipVerify = config.insecureSkipVerify;
@@ -37,10 +37,7 @@ class K8SClient {
     enforce(response.statusCode == 200, format("Failed to list %s: %d", kind, response.statusCode));
 
     auto items = response.data["items"].array;
-    K8SResource[] results;
-    foreach (item; items) {
-      results ~= K8SResource(item);
-    }
+    K8SResource[] results = items.map!((item => new K8SResource(item))).array;
     return results;
   }
 
@@ -49,7 +46,7 @@ class K8SClient {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind ~ "/" ~ name;
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get %s %s: %d", kind, name, response.statusCode));
-    return K8SResource(response.data);
+    return new K8SResource(response.data);
   }
 
   /// Creates a new resource.
@@ -57,7 +54,7 @@ class K8SClient {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind;
     auto response = doRequest("POST", path, spec);
     enforce(response.statusCode == 201, format("Failed to create %s: %d", kind, response.statusCode));
-    return K8SResource(response.data);
+    return new K8SResource(response.data);
   }
 
   /// Updates an existing resource.
@@ -65,7 +62,7 @@ class K8SClient {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind ~ "/" ~ name;
     auto response = doRequest("PUT", path, spec);
     enforce(response.statusCode == 200, format("Failed to update %s %s: %d", kind, name, response.statusCode));
-    return K8SResource(response.data);
+    return new K8SResource(response.data);
   }
 
   /// Deletes a resource.
@@ -80,59 +77,47 @@ class K8SClient {
     auto resources = listResources("v1", "pods", namespace_);
     K8SPod[] pods;
     foreach (res; resources) {
-      pods ~= K8SPod(res);
+      pods ~= new K8SPod(res);
     }
     return pods;
   }
 
   /// Gets a single Pod.
   K8SPod getPod(string namespace_, string name) {
-    return K8SPod(getResource("v1", "pods", namespace_, name));
+    return new K8SPod(getResource("v1", "pods", namespace_, name));
   }
 
   /// Lists Deployments in a namespace.
   K8SDeployment[] listDeployments(string namespace_ = "default") {
     auto resources = listResources("apps/v1", "deployments", namespace_);
-    K8SDeployment[] deploys;
-    foreach (res; resources) {
-      deploys ~= K8SDeployment(res);
-    }
-    return deploys;
+    return resources.map!(res => new K8SDeployment(res)).array;
   }
 
   /// Gets a single Deployment.
   K8SDeployment getDeployment(string namespace_, string name) {
-    return K8SDeployment(getResource("apps/v1", "deployments", namespace_, name));
+    return new K8SDeployment(getResource("apps/v1", "deployments", namespace_, name));
   }
 
   /// Lists Services in a namespace.
   K8SService[] listServices(string namespace_ = "default") {
     auto resources = listResources("v1", "services", namespace_);
-    K8SService[] services;
-    foreach (res; resources) {
-      services ~= K8SService(res);
-    }
-    return services;
+    return resources.map!(res => new K8SService(res)).array;
   }
 
   /// Gets a single Service.
   K8SService getService(string namespace_, string name) {
-    return K8SService(getResource("v1", "services", namespace_, name));
+    return new K8SService(getResource("v1", "services", namespace_, name));
   }
 
   /// Lists ConfigMaps in a namespace.
   K8SConfigMap[] listConfigMaps(string namespace_ = "default") {
     auto resources = listResources("v1", "configmaps", namespace_);
-    K8SConfigMap[] cms;
-    foreach (res; resources) {
-      cms ~= K8SConfigMap(res);
-    }
-    return cms;
+    return resources.map!(res => new K8SConfigMap(res)).array;
   }
 
   /// Gets a single ConfigMap.
   K8SConfigMap getConfigMap(string namespace_, string name) {
-    return K8SConfigMap(getResource("v1", "configmaps", namespace_, name));
+    return new K8SConfigMap(getResource("v1", "configmaps", namespace_, name));
   }
 
   /// Watches for events on a resource kind.
@@ -175,7 +160,7 @@ private:
         auto bodyStr = res.bodyReader.readAllUTF8();
         if (bodyStr.length > 0) {
           try {
-            result = parseJSON(bodyStr);
+            result = parseJsonString(bodyStr);
           } catch (Exception) {
             result = Json(bodyStr);
           }

@@ -1,5 +1,7 @@
 module uim.kubernetes.classes.pod;
 
+import uim.kubernetes;
+@safe:
 // Pod resource
 class K8SPod {
   K8SResource resource;

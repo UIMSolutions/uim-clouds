@@ -1,5 +1,7 @@
 module uim.kubernetes.classes.service;
 
+import uim.kubernetes;
+@safe:
 // Service resource
 class K8SService {
   K8SResource resource;

@@ -1,8 +1,21 @@
 module uim.kubernetes.classes.resource;
 
+import uim.kubernetes;
+@safe:
 // Common Kubernetes resource wrapper
 class K8SResource {
-  Json data;
+  this() {
+    _data = Json.emptyObject;
+  }
+  protected Json _data;
+
+  Json data() const @trusted {
+    return _data;
+  }
+
+  void data(Json value) @trusted {
+    _data = value;
+  }
 
   string name() const @trusted {
     if (auto meta = "metadata" in data.object) {
