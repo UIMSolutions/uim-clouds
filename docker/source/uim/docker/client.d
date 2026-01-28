@@ -5,18 +5,9 @@
 *****************************************************************************************************************/
 module uim.docker.client;
 
-import std.exception : enforce;
-import std.format : format;
-import std.json : Json, parseJSON;
-import std.string : split;
+import uim.docker;
 
-import vibe.http.client : HTTPClientRequest, HTTPClientResponse, requestHTTP;
-import vibe.stream.operations : readAllUTF8;
-
-import uim.docker.config;
-import uim.docker.resources;
-
-@trusted:
+@safe:
 
 /// Docker API HTTP client.
 class DockerClient {
@@ -40,7 +31,7 @@ class DockerClient {
   }
 
   /// Lists all containers.
-  Container[] listContainers(bool all = false) {
+  DockerContainer[] listContainers(bool all = false) {
     string path = "/" ~ apiVersion ~ "/containers/json";
     if (all) {
       path ~= "?all=true";
@@ -48,21 +39,16 @@ class DockerClient {
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list containers: %d", response.statusCode));
 
-    Container[] results;
-    if (response.data.type == Json.Type.array) {
-      foreach (item; response.data.array) {
-        results ~= Container(item);
-      }
-    }
-    return results;
+    return response.data.isArray ?
+       response.data.array.map!(res => new DockerContainer(item)) : null
   }
 
   /// Gets a single container by ID or name.
-  Container getContainer(string idOrName) {
+  DockerContainer getContainer(string idOrName) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/json";
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to get container %s: %d", idOrName, response.statusCode));
-    return Container(response.data);
+    return new DockerContainer(response.data);
   }
 
   /// Creates a new container.
@@ -71,7 +57,7 @@ class DockerClient {
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create container: %d", response.statusCode));
     if (auto id = "Id" in response.data.object) {
-      return id.str;
+      return id.to!string;
     }
     return "";
   }
@@ -94,78 +80,61 @@ class DockerClient {
   void removeContainer(string idOrName, bool force = false, bool removeVolumes = false) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "?force=" ~ (force ? "true" : "false") ~ "&v=" ~ (removeVolumes ? "true" : "false");
     auto response = doRequest("DELETE", path, Json());
-    enforce(response.statusCode == 204, format("Failed to remove container: %d", response.statusCode));
+    enforce(response.statusCode == 204, "Failed to remove container: %d".format(response.statusCode));
   }
 
   /// Gets container logs.
   string getLogs(string idOrName, bool stdout = true, bool stderr = true) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/logs?stdout=" ~ (stdout ? "true" : "false") ~ "&stderr=" ~ (stderr ? "true" : "false");
     auto response = doRequest("GET", path, Json());
-    enforce(response.statusCode == 200, format("Failed to get logs: %d", response.statusCode));
+    enforce(response.statusCode == 200, "Failed to get logs: %d".format(response.statusCode));
     return response.logText;
   }
 
   /// Lists all images.
-  Image[] listImages() {
+  DockerImage[] listImages() {
     string path = "/" ~ apiVersion ~ "/images/json";
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list images: %d", response.statusCode));
-
-    Image[] results;
-    if (response.data.type == Json.Type.array) {
-      foreach (item; response.data.array) {
-        results ~= Image(item);
-      }
-    }
-    return results;
+    
+    return response.data.isArray ? 
+      response.data.toArray.map!(item => new DockerImage(item) : null;
   }
 
   /// Lists all volumes.
-  Volume[] listVolumes() {
+  DockerVolume[] listVolumes() {
     string path = "/" ~ apiVersion ~ "/volumes";
     auto response = doRequest("GET", path, Json());
-    enforce(response.statusCode == 200, format("Failed to list volumes: %d", response.statusCode));
+    enforce(response.statusCode == 200, "Failed to list volumes: %d".format(response.statusCode));
 
-    Volume[] results;
+    DockerVolume[] results;
     if (auto volumesObj = "Volumes" in response.data.object) {
-      if (volumesObj.type == Json.Type.array) {
-        foreach (vol; volumesObj.array) {
-          results ~= Volume(vol);
-        }
+      results = volumesObj.isArray) ?
+        volumesObj.toArray.map!(
+          vol => new DockerVolume(vol)) : null
       }
     }
-    return results;
   }
 
   /// Lists all networks.
-  Network[] listNetworks() {
+  DockerNetwork[] listNetworks() {
     string path = "/" ~ apiVersion ~ "/networks";
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list networks: %d", response.statusCode));
 
-    Network[] results;
-    if (response.data.type == Json.Type.array) {
-      foreach (item; response.data.array) {
-        results ~= Network(item);
-      }
-    }
-    return results;
+    return response.data.isArray ?
+      response.data.array.map(res => new Network(item)) : null;
   }
 
   /// Creates an exec instance in a container.
   string createExec(string containerId, string[] cmd) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ containerId ~ "/exec";
-    auto cmdArray = Json([]);
-    foreach (arg; cmd) {
-      cmdArray.array ~= Json(arg);
-    }
-    Json config = Json(["Cmd": cmdArray]);
+    auto cmdArray = cmd.map!(arg => Json(arg)).array;
+    
+    Json config = ["Cmd": cmdArray].toJson;
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create exec: %d", response.statusCode));
-    if (auto id = "Id" in response.data.object) {
-      return id.str;
-    }
-    return "";
+    return response.data.getString("Id");
   }
 
   /// Starts an exec instance.

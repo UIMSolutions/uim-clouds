@@ -6,7 +6,7 @@
 module uim.kvm;
 
 public {
-  import uim.core;
+  import uim.oop;
 
   import uim.kvm.config;
   import uim.kvm.resources;
