@@ -1,9 +1,13 @@
 module uim.kubernetes.classes.service;
 
 import uim.kubernetes;
+
+mixin(ShowModule!());
+
 @safe:
+
 // Service resource
-class K8SService {
+class K8SService : IK8SService {
   K8SResource resource;
 
   string name() const {
@@ -18,17 +22,14 @@ class K8SService {
     return resource.spec();
   }
 
-  string serviceType() const @trusted {
-    if (auto t = "type" in spec().object) {
-      return t.str;
-    }
-    return "ClusterIP";
+  string serviceType() const {
+    return spec().hasKey("type") ? spec()["type"].to!string : "ClusterIP";
   }
 
-  Json[] ports() const @trusted {
-    if (auto p = "ports" in spec().object) {
-      if (p.type == Json.Type.array) {
-        return p.array;
+  Json[] ports() const {
+    if (auto ports = "ports" in spec().object) {
+      if (ports.isArray) {
+        return ports.toArray;
       }
     }
     return [];

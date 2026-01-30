@@ -2,6 +2,8 @@ module uim.kubernetes.classes.map;
 
 import uim.kubernetes;
 
+mixin(ShowModule!());
+
 @safe:
 // ConfigMap resource
 struct K8SConfigMap {

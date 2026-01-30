@@ -6,27 +6,30 @@
 module uim.kubernetes.classes.client;
 
 import uim.kubernetes;
+
+mixin(ShowModule!());
+
 @safe:
 
 /// Kubernetes API HTTP client.
 class K8SClient {
-  private string apiServer;
-  private string token;
-  private bool insecureSkipVerify;
-  private string caCertPath;
+  private string _apiServer;
+  private string _token;
+  private bool _insecureSkipVerify;
+  private string _caCertPath;
 
   this(string apiServer, string token, bool insecureSkipVerify = false, string caCertPath = "") {
-    this.apiServer = apiServer;
-    this.token = token;
-    this.insecureSkipVerify = insecureSkipVerify;
-    this.caCertPath = caCertPath;
+    this._apiServer = apiServer;
+    this._token = token;
+    this._insecureSkipVerify = insecureSkipVerify;
+    this._caCertPath = caCertPath;
   }
 
   this(K8SConfig config) {
-    this.apiServer = config.apiServer;
-    this.token = config.token;
-    this.insecureSkipVerify = config.insecureSkipVerify;
-    this.caCertPath = config.caCertPath;
+    this._apiServer = config.apiServer;
+    this._token = config.token;
+    this._insecureSkipVerify = config.insecureSkipVerify;
+    this._caCertPath = config.caCertPath;
   }
 
   /// Lists resources of a given kind in a namespace.
@@ -35,7 +38,7 @@ class K8SClient {
     auto response = doRequest("GET", path, Json());
     enforce(response.statusCode == 200, format("Failed to list %s: %d", kind, response.statusCode));
 
-    auto items = response.data["items"].array;
+    auto items = response.getArray("items").toArray;
     return items.map!(item => new K8SResource(item)).array;
   }
 

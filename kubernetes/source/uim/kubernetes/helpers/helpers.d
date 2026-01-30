@@ -7,6 +7,8 @@ module uim.kubernetes.helpers.helpers;
 
 import uim.kubernetes;
 
+mixin(ShowModule!());
+
 @safe:
 
 /// Creates a Pod manifest JSON.

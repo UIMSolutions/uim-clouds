@@ -7,7 +7,9 @@ module uim.kubernetes.classes.watcher;
 
 import uim.kubernetes;
 
-@trusted:
+mixin(ShowModule!());
+
+@safe:
 
 /// Represents an event from a Kubernetes watch stream.
 struct WatchEvent {
@@ -17,28 +19,29 @@ struct WatchEvent {
 
 /// Watches a Kubernetes resource stream.
 class K8SWatcher {
-  private K8SClient client;
-  private string path;
-  private bool closed = false;
+  private K8SClient _client;
+  private string _path;
+  private bool _closed = false;
 
   this(K8SClient client, string path) {
-    this.client = client;
-    this.path = path;
+    _client = client;
+    _path = path;
   }
 
   /// Gets the next event from the watch stream.
   bool next(out WatchEvent event) {
-    if (closed) {
+    if (_closed) {
       return false;
     }
 
     // Simplified: In real implementation, we'd keep an open connection.
     // For now, return false to indicate stream end.
-    closed = true;
+    _closed = true;
     return false;
   }
 
-  void close() {
-    closed = true;
+  IK8SWatcher close() {
+    _closed = true;
+    return this;
   }
 }

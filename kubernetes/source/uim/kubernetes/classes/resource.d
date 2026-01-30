@@ -1,6 +1,9 @@
 module uim.kubernetes.classes.resource;
 
 import uim.kubernetes;
+
+mixin(ShowModule!());
+
 @safe:
 // Common Kubernetes resource wrapper
 class K8SResource {

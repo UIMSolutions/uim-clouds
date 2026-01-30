@@ -6,6 +6,9 @@
 module uim.kubernetes.classes.config;
 
 import uim.kubernetes;
+
+mixin(ShowModule!());
+
 @safe:
 
 // Configuration for Kubernetes client authentication and API server access

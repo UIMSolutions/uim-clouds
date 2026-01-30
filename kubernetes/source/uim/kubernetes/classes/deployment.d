@@ -2,6 +2,8 @@ module uim.kubernetes.classes.deployment;
 
 import uim.kubernetes;
 
+mixin(ShowModule!());
+
 @safe:
 // Deployment resource
 class K8SDeployment {
