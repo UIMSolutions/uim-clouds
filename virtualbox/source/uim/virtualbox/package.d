@@ -5,11 +5,18 @@
 *****************************************************************************************************************/
 module uim.virtualbox;
 
-public {
-  import uim.core;
+public { // UIM Library
+  import uim.oop;
+}
 
+public { // Packages
+  import uim.virtualbox.helpers;
+  import uim.virtualbox.errors;
+  import uim.virtualbox.interfaces;
+  import uim.virtualbox.classes;
+}
+
+public { // Modules
   import uim.virtualbox.config;
   import uim.virtualbox.resources;
-  import uim.virtualbox.client;
-  import uim.virtualbox.helpers;
 }

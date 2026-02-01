@@ -6,7 +6,7 @@ mixin(ShowModule!());
 
 @safe:
 // Common Kubernetes resource wrapper
-class K8SResource {
+class K8SResource : IK8SResource{
   this() {
     _data = Json.emptyObject;
   }
@@ -16,8 +16,9 @@ class K8SResource {
     return _data;
   }
 
-  void data(Json value) @trusted {
+  IK8SResource data(Json value) @trusted {
     _data = value;
+    return this;
   }
 
   string name() const @trusted {
@@ -30,7 +31,8 @@ class K8SResource {
   }
 
   string namespace_() const @trusted {
-    if (auto meta = "metadata" in data.object) {
+    if (data.hasKey("metadata")) {
+      auto meta = data["metadata"];
       if (auto ns = "namespace" in meta.object) {
         return ns.str;
       }

@@ -36,9 +36,11 @@ class K8SClient {
   K8SResource[] listResources(string apiVersion, string kind, string namespace_) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind;
     auto response = doRequest("GET", path, Json());
-    enforce(response.statusCode == 200, format("Failed to list %s: %d", kind, response.statusCode));
+    if (response.statusCode != 200) {
+      enforce(false, format("Failed to list %s: %d", kind, response.statusCode));
+    }
 
-    auto items = response.getArray("items").toArray;
+    auto items = response.getArray("items");
     return items.map!(item => new K8SResource(item)).array;
   }
 
@@ -46,7 +48,9 @@ class K8SClient {
   K8SResource getResource(string apiVersion, string kind, string namespace_, string name) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind ~ "/" ~ name;
     auto response = doRequest("GET", path, Json());
-    enforce(response.statusCode == 200, format("Failed to get %s %s: %d", kind, name, response.statusCode));
+    if (response.statusCode != 200) {
+      enforce(false, format("Failed to get %s %s: %d", kind, name, response.statusCode));
+    }
     return new K8SResource(response.data);
   }
 
@@ -54,7 +58,9 @@ class K8SClient {
   K8SResource createResource(string apiVersion, string kind, string namespace_, Json spec) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind;
     auto response = doRequest("POST", path, spec);
-    enforce(response.statusCode == 201, format("Failed to create %s: %d", kind, response.statusCode));
+    if (response.statusCode != 201) {
+      enforce(false, format("Failed to create %s: %d", kind, response.statusCode));
+    }
     return new K8SResource(response.data);
   }
 
@@ -62,7 +68,8 @@ class K8SClient {
   K8SResource updateResource(string apiVersion, string kind, string namespace_, string name, Json spec) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind ~ "/" ~ name;
     auto response = doRequest("PUT", path, spec);
-    enforce(response.statusCode == 200, format("Failed to update %s %s: %d", kind, name, response.statusCode));
+    enforce(response.statusCode == 200, format("Failed to update %s %s: %d", kind, name, response
+        .statusCode));
     return new K8SResource(response.data);
   }
 
@@ -70,7 +77,10 @@ class K8SClient {
   void deleteResource(string apiVersion, string kind, string namespace_, string name) {
     string path = "/api/" ~ apiVersion ~ "/namespaces/" ~ namespace_ ~ "/" ~ kind ~ "/" ~ name;
     auto response = doRequest("DELETE", path, Json());
-    enforce(response.statusCode == 200 || response.statusCode == 202, format("Failed to delete %s %s: %d", kind, name, response.statusCode));
+    if (response.statusCode != 200 && response.statusCode != 202) {
+      enforce(false, format(
+          "Failed to delete %s %s: %d", kind, name, response.statusCode));
+    }
   }
 
   /// Lists Pods in a namespace.
@@ -142,27 +152,27 @@ private:
 
     requestHTTP(url,
       (scope HTTPClientRequest req) {
-        req.method = parseHttpMethod(method);
-        req.headers["Authorization"] = "Bearer " ~ token;
-        req.headers["Content-Type"] = "application/json";
-        if (insecureSkipVerify) {
-          req.sslContext = null;
-        }
-        if (body_.type != Json.Type.null_) {
-          req.writeBody(body_.toString());
-        }
-      },
+      req.method = parseHttpMethod(method);
+      req.headers["Authorization"] = "Bearer " ~ token;
+      req.headers["Content-Type"] = "application/json";
+      if (insecureSkipVerify) {
+        req.sslContext = null;
+      }
+      if (body_.type != Json.Type.null_) {
+        req.writeBody(body_.toString());
+      }
+    },
       (scope HTTPClientResponse res) {
-        statusCode = res.statusCode;
-        auto bodyStr = res.bodyReader.readAllUTF8();
-        if (bodyStr.length > 0) {
-          try {
-            result = parseJsonString(bodyStr);
-          } catch (Exception) {
-            result = Json(bodyStr);
-          }
+      statusCode = res.statusCode;
+      auto bodyStr = res.bodyReader.readAllUTF8();
+      if (bodyStr.length > 0) {
+        try {
+          result = parseJsonString(bodyStr);
+        } catch (Exception) {
+          result = Json(bodyStr);
         }
       }
+    }
     );
 
     return ApiResponse(result, statusCode);
@@ -171,11 +181,16 @@ private:
   import vibe.http.common : HTTPMethod;
 
   HTTPMethod parseHttpMethod(string method) {
-    if (method == "GET") return HTTPMethod.GET;
-    if (method == "POST") return HTTPMethod.POST;
-    if (method == "PUT") return HTTPMethod.PUT;
-    if (method == "DELETE") return HTTPMethod.DELETE;
-    if (method == "PATCH") return HTTPMethod.PATCH;
+    if (method == "GET")
+      return HTTPMethod.GET;
+    if (method == "POST")
+      return HTTPMethod.POST;
+    if (method == "PUT")
+      return HTTPMethod.PUT;
+    if (method == "DELETE")
+      return HTTPMethod.DELETE;
+    if (method == "PATCH")
+      return HTTPMethod.PATCH;
     return HTTPMethod.GET;
   }
 }

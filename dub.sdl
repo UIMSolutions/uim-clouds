@@ -20,9 +20,6 @@ dependency ":lxc" version="*"
 dependency ":namespaces" version="*"
 dependency ":podman" version="*"
 
-// Neural networks
-dependency ":neural" version="*"
-
 // Source files
 sourceFiles "./source/uim/clouds.d"
 
