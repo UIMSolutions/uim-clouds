@@ -121,7 +121,7 @@ string getContainerImage(Json pod) @trusted {
     if (auto containers = "containers" in spec.object) {
       if (containers.type == Json.Type.array && containers.array.length > 0) {
         if (auto image = "image" in containers.array[0].object) {
-          return image.str;
+          return image.toString;
         }
       }
     }
@@ -133,7 +133,7 @@ string getContainerImage(Json pod) @trusted {
 bool isTerminal(Json resource) @trusted {
   if (auto metadata = "metadata" in resource.object) {
     if (auto delTime = "deletionTimestamp" in metadata.object) {
-      if (delTime.type == Json.Type.string) {
+      if (delTime.type == Json.Type.toStringing) {
         return true;
       }
     }
@@ -145,7 +145,7 @@ bool isTerminal(Json resource) @trusted {
 string getResourceVersion(Json resource) @trusted {
   if (auto metadata = "metadata" in resource.object) {
     if (auto rv = "resourceVersion" in metadata.object) {
-      return rv.str;
+      return rv.toString;
     }
   }
   return "";

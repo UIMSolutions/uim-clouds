@@ -24,12 +24,12 @@ struct VirtualMachine {
   Json config;
 
   this(Json data) {
-    if (auto id = "id" in data.object) id_data = id.str;
-    if (auto name = "name" in data.object) this.name = name.str;
-    if (auto state = "state" in data.object) this.state = state.str;
+    if (auto id = "id" in data.object) id_data = id.toString;
+    if (auto name = "name" in data.object) this.name = name.toString;
+    if (auto state = "state" in data.object) this.state = state.toString;
     if (auto vcpus = "vcpus" in data.object) this.vCpuCount = cast(int)vcpus.integer;
     if (auto memory = "memory" in data.object) this.memoryMB = memory.integer / 1024;
-    if (auto uuid = "uuid" in data.object) this.uuid = uuid.str;
+    if (auto uuid = "uuid" in data.object) this.uuid = uuid.toString;
   }
 }
 
@@ -48,8 +48,8 @@ struct VMState {
   long cpu_time;
 
   this(Json data) {
-    if (auto name = "name" in data.object) this.name = name.str;
-    if (auto state = "state" in data.object) this.state = state.str;
+    if (auto name = "name" in data.object) this.name = name.toString;
+    if (auto state = "state" in data.object) this.state = state.toString;
     if (auto vcpus = "active_vcpus" in data.object) this.vCpuCount = cast(int)vcpus.integer;
   }
 }
@@ -68,11 +68,11 @@ struct VirtualDisk {
   string targetDevice;       // hda, sda, vda, etc.
 
   this(Json data) {
-    if (auto id = "id" in data.object) id_data = id.str;
-    if (auto name = "name" in data.object) this.name = name.str;
-    if (auto path = "path" in data.object) this.path = path.str;
-    if (auto type = "type" in data.object) this.type = type.str;
-    if (auto format = "format" in data.object) this.format = format.str;
+    if (auto id = "id" in data.object) id_data = id.toString;
+    if (auto name = "name" in data.object) this.name = name.toString;
+    if (auto path = "path" in data.object) this.path = path.toString;
+    if (auto type = "type" in data.object) this.type = type.toString;
+    if (auto format = "format" in data.object) this.format = format.toString;
     if (auto size = "size" in data.object) this.sizeBytes = size.integer;
   }
 }
@@ -90,11 +90,11 @@ struct VirtualNIC {
   string model;              // virtio, e1000, etc.
 
   this(Json data) {
-    if (auto id = "id" in data.object) id_data = id.str;
-    if (auto name = "name" in data.object) this.name = name.str;
-    if (auto mac = "mac" in data.object) this.macAddress = mac.str;
-    if (auto net = "network" in data.object) this.networkName = net.str;
-    if (auto ip = "ip" in data.object) this.ipAddress = ip.str;
+    if (auto id = "id" in data.object) id_data = id.toString;
+    if (auto name = "name" in data.object) this.name = name.toString;
+    if (auto mac = "mac" in data.object) this.macAddress = mac.toString;
+    if (auto net = "network" in data.object) this.networkName = net.toString;
+    if (auto ip = "ip" in data.object) this.ipAddress = ip.toString;
   }
 }
 
@@ -112,9 +112,9 @@ struct VirtualNetwork {
   Json config;
 
   this(Json data) {
-    if (auto id = "id" in data.object) id_data = id.str;
-    if (auto name = "name" in data.object) this.name = name.str;
-    if (auto bridge = "bridge" in data.object) this.bridgeName = bridge.str;
+    if (auto id = "id" in data.object) id_data = id.toString;
+    if (auto name = "name" in data.object) this.name = name.toString;
+    if (auto bridge = "bridge" in data.object) this.bridgeName = bridge.toString;
     if (auto active = "active" in data.object) this.isActive = active.type == Json.Type.true_;
   }
 }
@@ -134,10 +134,10 @@ struct StoragePool {
   Json config;
 
   this(Json data) {
-    if (auto id = "id" in data.object) id_data = id.str;
-    if (auto name = "name" in data.object) this.name = name.str;
-    if (auto type = "type" in data.object) this.type = type.str;
-    if (auto path = "path" in data.object) this.path = path.str;
+    if (auto id = "id" in data.object) id_data = id.toString;
+    if (auto name = "name" in data.object) this.name = name.toString;
+    if (auto type = "type" in data.object) this.type = type.toString;
+    if (auto path = "path" in data.object) this.path = path.toString;
     if (auto capacity = "capacity" in data.object) this.capacityBytes = capacity.integer;
   }
 }
@@ -155,9 +155,9 @@ struct StorageVolume {
   Json backingStore;    // For CoW volumes
 
   this(Json data) {
-    if (auto id = "id" in data.object) id_data = id.str;
-    if (auto name = "name" in data.object) this.name = name.str;
-    if (auto type = "type" in data.object) this.type = type.str;
+    if (auto id = "id" in data.object) id_data = id.toString;
+    if (auto name = "name" in data.object) this.name = name.toString;
+    if (auto type = "type" in data.object) this.type = type.toString;
     if (auto size = "size" in data.object) this.sizeBytes = size.integer;
   }
 }
@@ -174,9 +174,9 @@ struct Snapshot {
   Json metadata;
 
   this(Json data) {
-    if (auto id = "id" in data.object) id_data = id.str;
-    if (auto name = "name" in data.object) this.name = name.str;
-    if (auto desc = "description" in data.object) this.description = desc.str;
+    if (auto id = "id" in data.object) id_data = id.toString;
+    if (auto name = "name" in data.object) this.name = name.toString;
+    if (auto desc = "description" in data.object) this.description = desc.toString;
     if (auto created = "created_at" in data.object) this.createdAt = created.integer;
   }
 }

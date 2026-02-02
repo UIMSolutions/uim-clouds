@@ -22,10 +22,10 @@ struct Container {
 
   this(Json data) {
     if (auto name = "name" in data.object) {
-      this.name = name.str;
+      this.name = name.toString;
     }
     if (auto status = "status" in data.object) {
-      this.status = status.str;
+      this.status = status.toString;
     }
     if (auto ephemeral = "ephemeral" in data.object) {
       this.ephemeral = ephemeral.type == Json.Type.true_;
@@ -38,7 +38,7 @@ struct Container {
     }
     if (auto config = "config" in data.object && config.type == Json.Type.object) {
       foreach (key, value; config.object) {
-        this.config[key] = value.str;
+        this.config[key] = value.toString;
       }
     }
   }
@@ -58,17 +58,17 @@ struct ContainerState {
 
   this(Json data) {
     if (auto name = "name" in data.object) {
-      this.name = name.str;
+      this.name = name.toString;
     }
     if (auto status = "status" in data.object) {
-      this.status = status.str;
+      this.status = status.toString;
     }
     if (auto timestamp = "timestamp" in data.object) {
       this.timestamp = timestamp.integer;
     }
     if (auto autostart = "config" in data.object) {
       if (auto as = "boot.autostart" in autostart.object) {
-        this.autostart = as.str == "1" || as.str == "true";
+        this.autostart = as.toString == "1" || as.toString == "true";
       }
     }
   }
@@ -85,16 +85,16 @@ struct Image {
 
   this(Json data) {
     if (auto name = "name" in data.object) {
-      this.name = name.str;
+      this.name = name.toString;
     }
     if (auto description = "description" in data.object) {
-      this.description = description.str;
+      this.description = description.toString;
     }
     if (auto size = "size" in data.object) {
       this.size = size.integer;
     }
     if (auto type = "type" in data.object) {
-      this.type = type.str;
+      this.type = type.toString;
     }
   }
 }
@@ -109,19 +109,19 @@ struct Network {
 
   this(Json data) {
     if (auto name = "name" in data.object) {
-      this.name = name.str;
+      this.name = name.toString;
     }
     if (auto type = "type" in data.object) {
-      this.type = type.str;
+      this.type = type.toString;
     }
     if (auto members = "members" in data.object && members.type == Json.Type.array) {
       foreach (member; members.array) {
-        this.members ~= member.str;
+        this.members ~= member.toString;
       }
     }
     if (auto config = "config" in data.object && config.type == Json.Type.object) {
       foreach (key, value; config.object) {
-        this.config[key] = value.str;
+        this.config[key] = value.toString;
       }
     }
   }
@@ -138,17 +138,17 @@ struct StoragePool {
 
   this(Json data) {
     if (auto name = "name" in data.object) {
-      this.name = name.str;
+      this.name = name.toString;
     }
     if (auto driver = "driver" in data.object) {
-      this.driver = driver.str;
+      this.driver = driver.toString;
     }
     if (auto source = "source" in data.object) {
-      this.source = source.str;
+      this.source = source.toString;
     }
     if (auto config = "config" in data.object && config.type == Json.Type.object) {
       foreach (key, value; config.object) {
-        this.config[key] = value.str;
+        this.config[key] = value.toString;
       }
     }
   }
@@ -164,14 +164,14 @@ struct StorageVolume {
 
   this(Json data) {
     if (auto name = "name" in data.object) {
-      this.name = name.str;
+      this.name = name.toString;
     }
     if (auto volumeType = "type" in data.object) {
-      this.volumeType = volumeType.str;
+      this.volumeType = volumeType.toString;
     }
     if (auto config = "config" in data.object && config.type == Json.Type.object) {
       foreach (key, value; config.object) {
-        this.config[key] = value.str;
+        this.config[key] = value.toString;
       }
     }
   }
@@ -188,13 +188,13 @@ struct Snapshot {
 
   this(Json data) {
     if (auto name = "name" in data.object) {
-      this.name = name.str;
+      this.name = name.toString;
     }
     if (auto createdAt = "created_at" in data.object) {
       this.createdAt = createdAt.integer;
     }
     if (auto description = "description" in data.object) {
-      this.description = description.str;
+      this.description = description.toString;
     }
   }
 }
@@ -225,16 +225,16 @@ struct Operation {
 
   this(Json data) {
     if (auto id = "id" in data.object) {
-      this.id = id.str;
+      this.id = id.toString;
     }
     if (auto type = "type" in data.object) {
-      this.operationType = type.str;
+      this.operationType = type.toString;
     }
     if (auto description = "description" in data.object) {
-      this.description = description.str;
+      this.description = description.toString;
     }
     if (auto status = "status" in data.object) {
-      this.status = status.str;
+      this.status = status.toString;
     }
     if (auto createdAt = "created_at" in data.object) {
       this.createdAt = createdAt.integer;

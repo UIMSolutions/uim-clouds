@@ -18,7 +18,7 @@ client.createResource("v1", "pods", "default", podSpec);
 auto client = KubernetesClient(apiServer, token);
 auto watcher = client.watchPods("default");
 while (auto event = watcher.next()) {
-  writefln("Event: %s on %s", event.type, event.object["metadata"]["name"].str);
+  writefln("Event: %s on %s", event.type, event.object["metadata"]["name"].toString);
 }
 # UIM Kubernetes Library
 
@@ -81,7 +81,7 @@ import uim.kubernetes;
 auto client = KubernetesClient(apiServer, token);
 auto watcher = client.watchPods("default");
 while (auto event = watcher.next()) {
-  writefln("Event: %s on %s", event.type, event.object["metadata"]["name"].str);
+  writefln("Event: %s on %s", event.type, event.object["metadata"]["name"].toString);
 }
 ```
 

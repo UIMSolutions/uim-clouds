@@ -10,7 +10,7 @@ import std.format : format;
 import std.json : Json;
 
 import vibe.http.client : requestHTTP;
-import vibe.stream.operations : readAllUTF8;
+import vibe.toStringeam.operations : readAllUTF8;
 
 import uim.virtualbox.config;
 import uim.virtualbox.resources;
@@ -55,7 +55,7 @@ class VirtualBoxClient {
     auto response = doRequest("POST", "/vms", body);
     enforce(response.statusCode == 201, format("Failed to create VM: %d", response.statusCode));
     if (auto id = "id" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -123,7 +123,7 @@ class VirtualBoxClient {
     }
     auto response = doRequest("POST", "/vms/" ~ nameOrId ~ "/snapshots", body);
     enforce(response.statusCode == 201, format("Failed to create snapshot: %d", response.statusCode));
-    if (auto id = "id" in response.data.object) return id.str;
+    if (auto id = "id" in response.data.object) return id.toString;
     return "";
   }
 
@@ -196,10 +196,10 @@ class VirtualBoxClient {
     enforce(response.statusCode == 200, format("Failed to get host info: %d", response.statusCode));
     VBoxHostInfo info;
     // Populate fields if present
-    if (auto name = "hostname" in response.data.object) info.hostName = name.str;
+    if (auto name = "hostname" in response.data.object) info.hostName = name.toString;
     if (auto cpus = "cpus" in response.data.object) info.cpuCount = cast(int)cpus.integer;
     if (auto mem = "memory" in response.data.object) info.memoryMB = mem.integer;
-    if (auto ver = "version" in response.data.object) info.vboxVersion = ver.str;
+    if (auto ver = "version" in response.data.object) info.vboxVersion = ver.toString;
     return info;
   }
 

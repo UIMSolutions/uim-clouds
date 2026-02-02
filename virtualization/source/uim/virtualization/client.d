@@ -89,7 +89,7 @@ class VirtualizationClient {
     enforce(response.statusCode == 201, format("Failed to create VM: %d", response.statusCode));
     
     if (auto id = "id" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -235,7 +235,7 @@ class VirtualizationClient {
     enforce(response.statusCode == 201, format("Failed to create snapshot: %d", response.statusCode));
     
     if (auto id = "id" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -290,7 +290,7 @@ class VirtualizationClient {
     enforce(response.statusCode == 201, format("Failed to create storage pool: %d", response.statusCode));
     
     if (auto id = "id" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -326,7 +326,7 @@ class VirtualizationClient {
     enforce(response.statusCode == 201, format("Failed to create volume: %d", response.statusCode));
     
     if (auto id = "id" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -374,7 +374,7 @@ class VirtualizationClient {
     enforce(response.statusCode == 201, format("Failed to create network: %d", response.statusCode));
     
     if (auto id = "id" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -402,7 +402,7 @@ class VirtualizationClient {
     enforce(response.statusCode == 201, format("Failed to clone VM: %d", response.statusCode));
     
     if (auto id = "id" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }

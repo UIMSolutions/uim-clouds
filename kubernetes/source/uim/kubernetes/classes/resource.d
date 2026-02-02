@@ -24,7 +24,7 @@ class K8SResource : IK8SResource{
   string name() const @trusted {
     if (auto meta = "metadata" in data.object) {
       if (auto n = "name" in meta.object) {
-        return n.str;
+        return n.toString;
       }
     }
     return "";
@@ -34,7 +34,7 @@ class K8SResource : IK8SResource{
     if (data.hasKey("metadata")) {
       auto meta = data["metadata"];
       if (auto ns = "namespace" in meta.object) {
-        return ns.str;
+        return ns.toString;
       }
     }
     return "default";
@@ -42,14 +42,14 @@ class K8SResource : IK8SResource{
 
   string kind() const @trusted {
     if (auto k = "kind" in data.object) {
-      return k.str;
+      return k.toString;
     }
     return "";
   }
 
   string apiVersion() const @trusted {
     if (auto v = "apiVersion" in data.object) {
-      return v.str;
+      return v.toString;
     }
     return "v1";
   }

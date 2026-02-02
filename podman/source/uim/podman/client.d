@@ -62,7 +62,7 @@ class PodmanClient {
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create container: %d", response.statusCode));
     if (auto id = "Id" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -172,7 +172,7 @@ class PodmanClient {
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create pod: %d", response.statusCode));
     if (auto id = "Id" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -234,7 +234,7 @@ class PodmanClient {
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create volume: %d", response.statusCode));
     if (auto name = "Name" in response.data.object) {
-      return name.str;
+      return name.toString;
     }
     return "";
   }
@@ -273,7 +273,7 @@ class PodmanClient {
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create network: %d", response.statusCode));
     if (auto id = "Id" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }

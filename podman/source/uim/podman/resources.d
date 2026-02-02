@@ -24,25 +24,25 @@ struct Container {
   string exitCode;
 
   this(Json data) {
-    if (auto id = "Id" in data.object) id_data = id.str;
+    if (auto id = "Id" in data.object) id_data = id.toString;
     if (auto names = "Names" in data.object && names.type == Json.Type.array && names.array.length > 0) {
-      name = names.array[0].str;
+      name = names.array[0].toString;
     }
     if (auto image = "Image" in data.object) {
-      this.image = image.str;
+      this.image = image.toString;
     }
     if (auto state = "State" in data.object) {
-      this.state = state.str;
+      this.state = state.toString;
     }
     if (auto status = "Status" in data.object) {
-      this.status = status.str;
+      this.status = status.toString;
     }
     if (auto created = "Created" in data.object) {
       this.created = created.integer;
     }
     if (auto labels = "Labels" in data.object && labels.type == Json.Type.object) {
       foreach (key, value; labels.object) {
-        this.labels[key] = value.str;
+        this.labels[key] = value.toString;
       }
     }
   }
@@ -59,11 +59,11 @@ struct Image {
 
   this(Json data) {
     if (auto id = "Id" in data.object) {
-      this.id = id.str;
+      this.id = id.toString;
     }
     if (auto repoTags = "RepoTags" in data.object && repoTags.type == Json.Type.array) {
       foreach (tag; repoTags.array) {
-        this.repoTags ~= tag.str;
+        this.repoTags ~= tag.toString;
       }
     }
     if (auto created = "Created" in data.object) {
@@ -74,7 +74,7 @@ struct Image {
     }
     if (auto labels = "Labels" in data.object && labels.type == Json.Type.object) {
       foreach (key, value; labels.object) {
-        this.labels[key] = value.str;
+        this.labels[key] = value.toString;
       }
     }
   }
@@ -93,13 +93,13 @@ struct Pod {
 
   this(Json data) {
     if (auto id = "Id" in data.object) {
-      this.id = id.str;
+      this.id = id.toString;
     }
     if (auto name = "Name" in data.object) {
-      this.name = name.str;
+      this.name = name.toString;
     }
     if (auto status = "Status" in data.object) {
-      this.status = status.str;
+      this.status = status.toString;
     }
     if (auto created = "Created" in data.object) {
       this.created = created.integer;
@@ -109,7 +109,7 @@ struct Pod {
     }
     if (auto labels = "Labels" in data.object && labels.type == Json.Type.object) {
       foreach (key, value; labels.object) {
-        this.labels[key] = value.str;
+        this.labels[key] = value.toString;
       }
     }
   }
@@ -125,13 +125,13 @@ struct Volume {
 
   this(Json data) {
     if (auto name = "Name" in data.object) {
-      this.name = name.str;
+      this.name = name.toString;
     }
     if (auto driver = "Driver" in data.object) {
-      this.driver = driver.str;
+      this.driver = driver.toString;
     }
     if (auto mountPoint = "Mountpoint" in data.object) {
-      this.mountPoint = mountPoint.str;
+      this.mountPoint = mountPoint.toString;
     }
     if (auto options = "Options" in data.object) {
       this.options = options;
@@ -149,16 +149,16 @@ struct Network {
 
   this(Json data) {
     if (auto id = "Id" in data.object) {
-      this.id = id.str;
+      this.id = id.toString;
     }
     if (auto name = "Name" in data.object) {
-      this.name = name.str;
+      this.name = name.toString;
     }
     if (auto driver = "Driver" in data.object) {
-      this.driver = driver.str;
+      this.driver = driver.toString;
     }
     if (auto scope = "Scope" in data.object) {
-      this.scope = scope.str;
+      this.scope = scope.toString;
     }
   }
 }

@@ -8,10 +8,10 @@ module uim.lxc.client;
 import std.exception : enforce;
 import std.format : format;
 import std.json : Json, parseJSON;
-import std.string : split;
+import std.toStringing : split;
 
 import vibe.http.client : HTTPClientRequest, HTTPClientResponse, requestHTTP;
-import vibe.stream.operations : readAllUTF8;
+import vibe.toStringeam.operations : readAllUTF8;
 
 import uim.lxc.config;
 import uim.lxc.resources;
@@ -103,7 +103,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to create container: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -119,7 +119,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to start container: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -138,7 +138,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to stop container: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -151,7 +151,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to restart container: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -164,7 +164,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to freeze container: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -177,7 +177,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to unfreeze container: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -189,7 +189,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to remove container: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -272,7 +272,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to create network: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -284,7 +284,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to remove network: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -328,7 +328,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to create storage pool: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -340,7 +340,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to remove storage pool: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -375,7 +375,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to create snapshot: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -387,7 +387,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to remove snapshot: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }
@@ -399,7 +399,7 @@ class LXCClient {
     enforce(response.statusCode == 202, format("Failed to restore snapshot: %d", response.statusCode));
     
     if (auto id = "operation" in response.data.object) {
-      return id.str;
+      return id.toString;
     }
     return "";
   }

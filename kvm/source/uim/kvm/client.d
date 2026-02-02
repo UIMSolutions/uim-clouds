@@ -172,7 +172,7 @@ class KVMClient {
     if (auto cores = "cores" in resp.data.object) info.cpuCores = cast(int)cores.toInteger;
     if (auto threads = "threads" in resp.data.object) info.cpuThreads = cast(int)threads.integer;
     if (auto mem = "memory" in resp.data.object) info.memoryKiB = mem.integer;
-    if (auto lv = "libvirt_version" in resp.data.object) info.libvirtVersion = lv.str;
+    if (auto lv = "libvirt_version" in resp.data.object) info.libvirtVersion = lv.toString;
     if (auto hv = "hypervisor_version" in resp.data.object) info.hypervisorVersion = hv.getString;
     return info;
   }

@@ -23,13 +23,13 @@ struct VBoxVM {
   string acpiState;
 
   this(Json data) {
-    if (auto id = "id" in data.object) this.id = id.str;
-    if (auto name = "name" in data.object) this.name = name.str;
-    if (auto state = "state" in data.object) this.state = state.str;
+    if (auto id = "id" in data.object) this.id = id.toString;
+    if (auto name = "name" in data.object) this.name = name.toString;
+    if (auto state = "state" in data.object) this.state = state.toString;
     if (auto mem = "memory" in data.object) this.memoryMB = mem.integer;
     if (auto cpu = "cpus" in data.object) this.cpuCount = cast(int)cpu.integer;
-    if (auto os = "ostype" in data.object) this.osType = os.str;
-    if (auto uuid = "uuid" in data.object) this.uuid = uuid.str;
+    if (auto os = "ostype" in data.object) this.osType = os.toString;
+    if (auto uuid = "uuid" in data.object) this.uuid = uuid.toString;
   }
 }
 
@@ -42,9 +42,9 @@ struct VBoxSnapshot {
   bool current;
 
   this(Json data) {
-    if (auto id = "id" in data.object) this.id = id.str;
-    if (auto name = "name" in data.object) this.name = name.str;
-    if (auto desc = "description" in data.object) this.description = desc.str;
+    if (auto id = "id" in data.object) this.id = id.toString;
+    if (auto name = "name" in data.object) this.name = name.toString;
+    if (auto desc = "description" in data.object) this.description = desc.toString;
     if (auto ts = "timestamp" in data.object) this.timeStamp = ts.integer;
     if (auto cur = "current" in data.object) this.current = cur.type == Json.Type.true_;
   }
@@ -59,11 +59,11 @@ struct VBoxStorageAttachment {
   string controller;
 
   this(Json data) {
-    if (auto port = "port" in data.object) this.port = port.str;
-    if (auto dev = "device" in data.object) this.device = dev.str;
-    if (auto type = "type" in data.object) this.type = type.str;
-    if (auto medium = "medium" in data.object) this.medium = medium.str;
-    if (auto ctl = "controller" in data.object) this.controller = ctl.str;
+    if (auto port = "port" in data.object) this.port = port.toString;
+    if (auto dev = "device" in data.object) this.device = dev.toString;
+    if (auto type = "type" in data.object) this.type = type.toString;
+    if (auto medium = "medium" in data.object) this.medium = medium.toString;
+    if (auto ctl = "controller" in data.object) this.controller = ctl.toString;
   }
 }
 
@@ -77,12 +77,12 @@ struct VBoxNIC {
   string driver;      // virtio, e1000, etc.
 
   this(Json data) {
-    if (auto slot = "slot" in data.object) this.slot = slot.str;
-    if (auto type = "type" in data.object) this.type = type.str;
-    if (auto mac = "mac" in data.object) this.macAddress = mac.str;
-    if (auto att = "attachment" in data.object) this.attachment = att.str;
+    if (auto slot = "slot" in data.object) this.slot = slot.toString;
+    if (auto type = "type" in data.object) this.type = type.toString;
+    if (auto mac = "mac" in data.object) this.macAddress = mac.toString;
+    if (auto att = "attachment" in data.object) this.attachment = att.toString;
     if (auto cable = "cable" in data.object) this.cableConnected = cable.type == Json.Type.true_;
-    if (auto drv = "driver" in data.object) this.driver = drv.str;
+    if (auto drv = "driver" in data.object) this.driver = drv.toString;
   }
 }
 
