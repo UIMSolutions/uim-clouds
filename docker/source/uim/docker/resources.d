@@ -20,12 +20,9 @@ struct Container {
 
   string name() const @trusted {
     if (auto names = "Names" in data.object) {
-      if (names.type == Json.Type.array && names.array.length > 0) {
+      if (names.isArray && names.array.length > 0) {
         auto nameStr = names.array[0].toString;
-        if (nameStr.length > 0 && nameStr[0] == '/') {
-          return nameStr[1 .. $];
-        }
-        return nameStr;
+        return nameStr.length > 0 && nameStr[0] == '/' ? nameStr[1 .. $] : nameStr;
       }
     }
     return "";

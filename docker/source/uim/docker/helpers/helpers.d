@@ -11,15 +11,8 @@ import uim.docker;
 
 /// Creates a container config for a simple image run.
 Json createContainerConfig(string image, string[] cmd = [], string[] env = []) {
-  Json[] cmdArray;
-  foreach (c; cmd) {
-    cmdArray ~= Json(c);
-  }
-
-  Json[] envArray;
-  foreach (e; env) {
-    envArray ~= Json(e);
-  }
+  Json[] cmdArray = cmd.map!(c => Json(c)).array;
+  Json[] envArray = env.map!(e => Json(e)).array;
 
   Json config = Json([
     "Image": Json(image),

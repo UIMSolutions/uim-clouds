@@ -25,7 +25,7 @@ struct Container {
 
   this(Json data) {
     if (auto id = "Id" in data.object) id_data = id.toString;
-    if (auto names = "Names" in data.object && names.type == Json.Type.array && names.array.length > 0) {
+    if (auto names = "Names" in data.object && names.isArray && names.array.length > 0) {
       name = names.array[0].toString;
     }
     if (auto image = "Image" in data.object) {
@@ -61,7 +61,7 @@ struct Image {
     if (auto id = "Id" in data.object) {
       this.id = id.toString;
     }
-    if (auto repoTags = "RepoTags" in data.object && repoTags.type == Json.Type.array) {
+    if (auto repoTags = "RepoTags" in data.object && repoTags.isArray) {
       foreach (tag; repoTags.array) {
         this.repoTags ~= tag.toString;
       }
@@ -104,7 +104,7 @@ struct Pod {
     if (auto created = "Created" in data.object) {
       this.created = created.integer;
     }
-    if (auto containers = "Containers" in data.object && containers.type == Json.Type.array) {
+    if (auto containers = "Containers" in data.object && containers.isArray) {
       this.numContainers = cast(int)containers.array.length;
     }
     if (auto labels = "Labels" in data.object && labels.type == Json.Type.object) {

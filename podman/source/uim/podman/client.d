@@ -40,7 +40,7 @@ class PodmanClient {
     enforce(response.statusCode == 200, format("Failed to list containers: %d", response.statusCode));
 
     Container[] results;
-    if (response.data.type == Json.Type.array) {
+    if (response.data.isArray) {
       foreach (item; response.data.array) {
         results ~= Container(item);
       }
@@ -119,7 +119,7 @@ class PodmanClient {
     enforce(response.statusCode == 200, format("Failed to list images: %d", response.statusCode));
 
     Image[] results;
-    if (response.data.type == Json.Type.array) {
+    if (response.data.isArray) {
       foreach (item; response.data.array) {
         results ~= Image(item);
       }
@@ -150,7 +150,7 @@ class PodmanClient {
     enforce(response.statusCode == 200, format("Failed to list pods: %d", response.statusCode));
 
     Pod[] results;
-    if (response.data.type == Json.Type.array) {
+    if (response.data.isArray) {
       foreach (item; response.data.array) {
         results ~= Pod(item);
       }
@@ -208,7 +208,7 @@ class PodmanClient {
 
     Volume[] results;
     if (auto volumes = "Volumes" in response.data.object) {
-      if (volumes.type == Json.Type.array) {
+      if (volumes.isArray) {
         foreach (item; volumes.array) {
           results ~= Volume(item);
         }
@@ -255,7 +255,7 @@ class PodmanClient {
     enforce(response.statusCode == 200, format("Failed to list networks: %d", response.statusCode));
 
     Network[] results;
-    if (response.data.type == Json.Type.array) {
+    if (response.data.isArray) {
       foreach (item; response.data.array) {
         results ~= Network(item);
       }

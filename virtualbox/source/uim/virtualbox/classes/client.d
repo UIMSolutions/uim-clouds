@@ -32,7 +32,7 @@ class VirtualBoxClient {
 
     VBoxVM[] results;
     if (auto vms = "vms" in response.data.object) {
-      if (vms.type == Json.Type.array) {
+      if (vms.isArray) {
         foreach (item; vms.array) {
           results ~= VBoxVM(item);
         }
@@ -107,7 +107,7 @@ class VirtualBoxClient {
     enforce(response.statusCode == 200, format("Failed to list snapshots: %d", response.statusCode));
     VBoxSnapshot[] results;
     if (auto snaps = "snapshots" in response.data.object) {
-      if (snaps.type == Json.Type.array) {
+      if (snaps.isArray) {
         foreach (item; snaps.array) {
           results ~= VBoxSnapshot(item);
         }
@@ -144,7 +144,7 @@ class VirtualBoxClient {
     enforce(response.statusCode == 200, format("Failed to list storage: %d", response.statusCode));
     VBoxStorageAttachment[] results;
     if (auto items = "attachments" in response.data.object) {
-      if (items.type == Json.Type.array) {
+      if (items.isArray) {
         foreach (item; items.array) {
           results ~= VBoxStorageAttachment(item);
         }
@@ -170,7 +170,7 @@ class VirtualBoxClient {
     enforce(response.statusCode == 200, format("Failed to list NICs: %d", response.statusCode));
     VBoxNIC[] results;
     if (auto items = "nics" in response.data.object) {
-      if (items.type == Json.Type.array) {
+      if (items.isArray) {
         foreach (item; items.array) {
           results ~= VBoxNIC(item);
         }

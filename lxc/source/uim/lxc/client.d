@@ -62,7 +62,7 @@ class LXCClient {
 
     Container[] results;
     if (auto metadata = "metadata" in response.data.object) {
-      if (metadata.type == Json.Type.array) {
+      if (metadata.isArray) {
         foreach (item; metadata.array) {
           results ~= Container(item);
         }
@@ -212,7 +212,7 @@ class LXCClient {
 
     Image[] results;
     if (auto metadata = "metadata" in response.data.object) {
-      if (metadata.type == Json.Type.array) {
+      if (metadata.isArray) {
         foreach (item; metadata.array) {
           results ~= Image(item);
         }
@@ -243,7 +243,7 @@ class LXCClient {
 
     Network[] results;
     if (auto metadata = "metadata" in response.data.object) {
-      if (metadata.type == Json.Type.array) {
+      if (metadata.isArray) {
         foreach (item; metadata.array) {
           results ~= Network(item);
         }
@@ -299,7 +299,7 @@ class LXCClient {
 
     StoragePool[] results;
     if (auto metadata = "metadata" in response.data.object) {
-      if (metadata.type == Json.Type.array) {
+      if (metadata.isArray) {
         foreach (item; metadata.array) {
           results ~= StoragePool(item);
         }
@@ -355,7 +355,7 @@ class LXCClient {
 
     Snapshot[] results;
     if (auto metadata = "metadata" in response.data.object) {
-      if (metadata.type == Json.Type.array) {
+      if (metadata.isArray) {
         foreach (item; metadata.array) {
           results ~= Snapshot(item);
         }

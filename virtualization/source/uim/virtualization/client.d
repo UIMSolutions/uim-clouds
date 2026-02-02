@@ -310,7 +310,7 @@ class VirtualizationClient {
 
     StorageVolume[] results;
     if (auto volumes = "volumes" in response.data.object) {
-      if (volumes.type == Json.Type.array) {
+      if (volumes.isArray) {
         foreach (item; volumes.array) {
           results ~= StorageVolume(item);
         }
@@ -349,7 +349,7 @@ class VirtualizationClient {
 
     VirtualNetwork[] results;
     if (auto networks = "networks" in response.data.object) {
-      if (networks.type == Json.Type.array) {
+      if (networks.isArray) {
         foreach (item; networks.array) {
           results ~= VirtualNetwork(item);
         }

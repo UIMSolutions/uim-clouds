@@ -20,7 +20,7 @@ struct Container {
 
   string name() const @trusted {
     if (auto names = "Names" in data.object) {
-      if (names.type == Json.Type.array && names.array.length > 0) {
+      if (names.isArray && names.array.length > 0) {
         auto nameStr = names.array[0].toString;
         if (nameStr.length > 0 && nameStr[0] == '/') {
           return nameStr[1 .. $];
@@ -47,7 +47,7 @@ struct Container {
 
   Json[] ports() const @trusted {
     if (auto p = "Ports" in data.object) {
-      if (p.type == Json.Type.array) {
+      if (p.isArray) {
         return p.array;
       }
     }
@@ -77,7 +77,7 @@ struct Image {
 
   string[] repoTags() const @trusted {
     if (auto tags = "RepoTags" in data.object) {
-      if (tags.type == Json.Type.array) {
+      if (tags.isArray) {
         string[] result;
         foreach (tag; tags.array) {
           result ~= tag.toString;

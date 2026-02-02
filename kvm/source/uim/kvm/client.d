@@ -112,7 +112,7 @@ class KVMClient {
     enforce(resp.statusCode == 200, format("Failed to list storage pools: %d", resp.statusCode));
     KVMStoragePool[] result;
     if (auto arr = "pools" in resp.data.object) {
-      if (arr.type == Json.Type.array) foreach(item; arr.array) result ~= KVMStoragePool(item);
+      if (arr.isArray) foreach(item; arr.array) result ~= KVMStoragePool(item);
     }
     return result;
   }

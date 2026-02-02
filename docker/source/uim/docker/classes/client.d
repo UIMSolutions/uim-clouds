@@ -11,155 +11,185 @@ import uim.docker;
 
 /// Docker API HTTP client.
 class DockerClient {
-  private string endpoint;
-  private string apiVersion;
-  private bool insecureSkipVerify;
-  private string caCertPath;
 
   this(string endpoint, string apiVersion = "v1.40", bool insecureSkipVerify = false, string caCertPath = "") {
-    this.endpoint = endpoint;
-    this.apiVersion = apiVersion;
-    this.insecureSkipVerify = insecureSkipVerify;
-    this.caCertPath = caCertPath;
+    _endpoint = endpoint;
+    _apiVersion = apiVersion;
+    _insecureSkipVerify = insecureSkipVerify;
+    _caCertPath = caCertPath;
   }
 
   this(DockerConfig config) {
-    this.endpoint = config.endpoint;
-    this.apiVersion = config.apiVersion;
-    this.insecureSkipVerify = config.insecureSkipVerify;
-    this.caCertPath = config.caCertPath;
+    _endpoint = config.endpoint;
+    _apiVersion = config.apiVersion;
+    _insecureSkipVerify = config.insecureSkipVerify;
+    _caCertPath = config.caCertPath;
+  }
+
+  protected string _endpoint;
+  string endpoint() const {
+    return _endpoint;
+  }
+  protected string _apiVersion;
+  string apiVersion() const {
+    return _apiVersion;
+  }
+  protected bool _insecureSkipVerify;
+  bool insecureSkipVerify() const {
+    return _insecureSkipVerify;
+  }
+  protected string _caCertPath;
+  string caCertPath() const {
+    return _caCertPath;
   }
 
   /// Lists all containers.
   DockerContainer[] listContainers(bool all = false) {
-    string path = "/" ~ apiVersion ~ "/containers/json";
-    if (all) {
-      path ~= "?all=true";
-    }
+    string path = "/" ~ _apiVersion ~ "/containers/json"~(all ? "?all=true" : "");
     auto response = doRequest("GET", path, Json());
     if (response.statusCode != 200) {
-      enforce(response.statusCode == 200, format("Failed to list containers: %d", response
+      enforce(false, format("Failed to list containers: %d", response
           .statusCode));
     }
     return response.data.isArray ?
-      response.data.array.map!(res => new DockerContainer(item)) : null;
+      response.data.array.map!(item => new DockerContainer(item)) : null;
+  }
 
-    /// Gets a single container by ID or name.
-    DockerContainer getContainer(string idOrName) {
-      string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/json";
-      auto response = doRequest("GET", path, Json());
-      enforce(response.statusCode == 200, format("Failed to get container %s: %d", idOrName, response
-          .statusCode));
-      return new DockerContainer(response.data);
-    }
+  /// Gets a single container by ID or name.
+  DockerContainer getContainer(string idOrName) {
+    string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "/json";
 
-    /// Creates a new container.
-    string createContainer(string name, Json config) {
-      string path = "/" ~ apiVersion ~ "/containers/create?name=" ~ name;
-      auto response = doRequest("POST", path, config);
-      enforce(response.statusCode == 201, format("Failed to create container: %d", response
-          .statusCode));
-      if (auto id = "Id" in response.data.object) {
-        return id.to!string;
-      }
-      return "";
-    }
-
-    /// Starts a container.
-    void startContainer(string idOrName) {
-      string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/start";
-      auto response = doRequest("POST", path, Json());
-      enforce(response.statusCode == 204 || response.statusCode == 304, format(
-          "Failed to start container: %d", response.statusCode));
-    }
-
-    /// Stops a container.
-    void stopContainer(string idOrName, int timeout = 10) {
-      string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/stop?t=" ~ format("%d", timeout);
-      auto response = doRequest("POST", path, Json());
-      enforce(response.statusCode == 204, format("Failed to stop container: %d", response
+    auto response = doRequest("GET", path, Json());
+    if (response.statusCode != 200) {
+      enforce(false, "Failed to get container %s: %d".format(idOrName, response
           .statusCode));
     }
+    return new DockerContainer(response.data);
+  }
 
-    /// Removes a container.
-    void removeContainer(string idOrName, bool force = false, bool removeVolumes = false) {
-      string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "?force=" ~ (force ? "true"
-          : "false") ~ "&v=" ~ (removeVolumes ? "true" : "false");
-      auto response = doRequest("DELETE", path, Json());
-      enforce(response.statusCode == 204, "Failed to remove container: %d".format(
+  /// Creates a new container.
+  string createContainer(string name, Json config) {
+    string path = "/" ~ _apiVersion ~ "/containers/create?name=" ~ name;
+
+    auto response = doRequest("POST", path, config);
+    if (!response.statusCode != 201) {
+      enforce(false, format("Failed to create container: %d", response.statusCode));
+    }
+    if (auto id = "Id" in response.data.object) {
+      return id.toString;
+    }
+    return "";
+  }
+
+  /// Starts a container.
+  void startContainer(string idOrName) {
+    string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "/start";
+
+    auto response = doRequest("POST", path, Json());
+    if (!response.statusCode != 204 && !response.statusCode != 304) {
+      enforce(false, format("Failed to start container: %d", response.statusCode));
+    }
+  }
+
+  /// Stops a container.
+  void stopContainer(string idOrName, int timeout = 10) {
+    string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "/stop?t=" ~ format("%d", timeout);
+    auto response = doRequest("POST", path, Json());
+    if (!response.statusCode != 204) {
+      enforce(false, format("Failed to stop container: %d", response.statusCode));
+    }
+  }
+
+  /// Removes a container.
+  void removeContainer(string idOrName, bool force = false, bool removeVolumes = false) {
+    string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "?force=" ~ (force ? "true"
+        : "false") ~ "&v=" ~ (removeVolumes ? "true" : "false");
+    auto response = doRequest("DELETE", path, Json());
+
+    if (!response.statusCode != 204) {
+      enforce(false, "Failed to remove container: %d".format(
           response.statusCode));
     }
+  }
+  /// Gets container logs.
+  string getLogs(string idOrName, bool stdout = true, bool stderr = true) {
+    string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "/logs?stdout=" ~ (stdout ? "true"
+        : "false") ~ "&stderr=" ~ (stderr ? "true" : "false");
+    auto response = doRequest("GET", path, Json());
 
-    /// Gets container logs.
-    string getLogs(string idOrName, bool stdout = true, bool stderr = true) {
-      string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/logs?stdout=" ~ (stdout ? "true"
-          : "false") ~ "&stderr=" ~ (stderr ? "true" : "false");
-      auto response = doRequest("GET", path, Json());
-      enforce(response.statusCode == 200, "Failed to get logs: %d".format(response.statusCode));
-      return response.logText;
+    if (!response.statusCode != 200) {
+      enforce(false, "Failed to get logs: %d".format(response.statusCode));
+    }
+    return response.logText;
+  }
+
+  /// Lists all images.
+  DockerImage[] listImages() {
+    string path = "/" ~ _apiVersion ~ "/images/json";
+    auto response = doRequest("GET", path, Json());
+    enforce(response.statusCode == 200, format("Failed to list images: %d", response.statusCode));
+
+    return response.data.isArray ?
+      response.data.toArray.map!(item => new DockerImage(item)) : null;
+  }
+
+  /// Lists all volumes.
+  DockerVolume[] listVolumes() {
+    string path = "/" ~ _apiVersion ~ "/volumes";
+    auto response = doRequest("GET", path, Json());
+
+    if (response.statusCode != 200) {
+      enforce(false, "Failed to list volumes: %d".format(response.statusCode));
     }
 
-    /// Lists all images.
-    DockerImage[] listImages() {
-      string path = "/" ~ apiVersion ~ "/images/json";
-      auto response = doRequest("GET", path, Json());
-      enforce(response.statusCode == 200, format("Failed to list images: %d", response.statusCode));
-
-      return response.data.isArray ?
-        response.data.toArray.map!(item => new DockerImage(item)) : null;
+    DockerVolume[] results;
+    if (
+      auto volumesObj = "Volumes" in response.data.object) {
+      results = volumesObj.isArray ?
+        volumesObj.toArray.map!(
+          vol => new DockerVolume(vol)) : null;
     }
-
-    /// Lists all volumes.
-    DockerVolume[] listVolumes() {
-      string path = "/" ~ apiVersion ~ "/volumes";
-      auto response = doRequest("GET", path, Json());
-      if (response.statusCode != 200) {
-        enforce(response.statusCode == 200, "Failed to list volumes: %d".format(
-            response.statusCode));
-      }
-
-      DockerVolume[] results;
-      if (
-        auto volumesObj = "Volumes" in response.data.object) {
-        results = volumesObj.isArray ?
-          volumesObj.toArray.map!(
-            vol => new DockerVolume(vol)) : null;
-      }
-    }
+    return results;
   }
 
   /// Lists all networks.
   DockerNetwork[] listNetworks() {
-    string path = "/" ~ apiVersion ~ "/networks";
+    string path = "/" ~ _apiVersion ~ "/networks";
     auto response = doRequest("GET", path, Json());
-    enforce(response.statusCode == 200, format("Failed to list networks: %d", response
-        .statusCode));
+
+    if (!response.statusCode != 200) {
+      enforce(false, "Failed to list networks: %d".format(response.statusCode));
+    }
     return response.data.isArray ?
-      response.data.array.map(res => new Network(item)) : null;
+      response.data.array.map(item => new DockerNetwork(item)) : null;
   }
 
   /// Creates an exec instance in a container.
   string createExec(string containerId, string[] cmd) {
-    string path = "/" ~ apiVersion ~ "/containers/" ~ containerId ~ "/exec";
+    string path = "/" ~ _apiVersion ~ "/containers/" ~ containerId ~ "/exec";
     auto cmdArray = cmd.map!(arg => Json(arg)).array;
     Json config = [
       "Cmd": cmdArray
     ].toJson;
     auto response = doRequest("POST", path, config);
-    enforce(response.statusCode == 201, format(
-        "Failed to create exec: %d", response.statusCode));
+
+    if (!response.statusCode != 201) {
+      enforce(false, "Failed to create exec: %d".format(response.statusCode));
+    }
     return response.data.getString(
       "Id");
   }
 
   /// Starts an exec instance.
   string execStart(string execId) {
-    string path = "/" ~ apiVersion ~ "/exec/" ~ execId ~ "/start";
+    string path = "/" ~ _apiVersion ~ "/exec/" ~ execId ~ "/start";
     Json config = Json(
       ["Detach": Json(false)]);
     auto response = doRequest("POST", path, config);
-    enforce(response.statusCode == 200, format("Failed to start exec: %d", response
-        .statusCode));
+
+    if (!response.statusCode != 200) {
+      enforce(false, "Failed to start exec: %d".format(response.statusCode));
+    }
     return response.logText;
   }
 

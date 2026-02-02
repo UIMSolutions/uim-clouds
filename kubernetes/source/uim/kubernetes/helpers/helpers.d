@@ -119,7 +119,7 @@ Json createConfigMapManifest(string name, string[string] data, string namespace_
 string getContainerImage(Json pod) @trusted {
   if (auto spec = "spec" in pod.object) {
     if (auto containers = "containers" in spec.object) {
-      if (containers.type == Json.Type.array && containers.array.length > 0) {
+      if (containers.isArray && containers.array.length > 0) {
         if (auto image = "image" in containers.array[0].object) {
           return image.toString;
         }

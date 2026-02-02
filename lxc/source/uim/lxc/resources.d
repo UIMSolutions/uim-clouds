@@ -114,7 +114,7 @@ struct Network {
     if (auto type = "type" in data.object) {
       this.type = type.toString;
     }
-    if (auto members = "members" in data.object && members.type == Json.Type.array) {
+    if (auto members = "members" in data.object && members.isArray) {
       foreach (member; members.array) {
         this.members ~= member.toString;
       }
