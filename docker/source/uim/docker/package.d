@@ -7,9 +7,14 @@ module uim.docker;
 
 public {
   import uim.oop;
+}
 
+public {
+  import uim.docker.classes;
+  import uim.docker.helpers;
+}
+
+public {
   import uim.docker.config;
   import uim.docker.resources;
-  import uim.docker.client;
-  import uim.docker.helpers;
 }

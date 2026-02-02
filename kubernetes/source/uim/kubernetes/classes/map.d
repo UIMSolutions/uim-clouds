@@ -26,7 +26,7 @@ struct K8SConfigMap {
 
   string get(string key) const @trusted {
     if (auto v = key in data().object) {
-      return v.str;
+      return v.toString;
     }
     return "";
   }

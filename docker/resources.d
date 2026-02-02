@@ -13,7 +13,7 @@ struct Container {
 
   string id() const @trusted {
     if (auto i = "Id" in data.object) {
-      return i.str;
+      return i.toString;
     }
     return "";
   }
@@ -21,7 +21,7 @@ struct Container {
   string name() const @trusted {
     if (auto names = "Names" in data.object) {
       if (names.type == Json.Type.array && names.array.length > 0) {
-        auto nameStr = names.array[0].str;
+        auto nameStr = names.array[0].toString;
         if (nameStr.length > 0 && nameStr[0] == '/') {
           return nameStr[1 .. $];
         }
@@ -33,14 +33,14 @@ struct Container {
 
   string status() const @trusted {
     if (auto s = "State" in data.object) {
-      return s.str;
+      return s.toString;
     }
     return "unknown";
   }
 
   string image() const @trusted {
     if (auto img = "Image" in data.object) {
-      return img.str;
+      return img.toString;
     }
     return "";
   }
@@ -70,7 +70,7 @@ struct Image {
 
   string id() const @trusted {
     if (auto i = "Id" in data.object) {
-      return i.str;
+      return i.toString;
     }
     return "";
   }
@@ -80,7 +80,7 @@ struct Image {
       if (tags.type == Json.Type.array) {
         string[] result;
         foreach (tag; tags.array) {
-          result ~= tag.str;
+          result ~= tag.toString;
         }
         return result;
       }
@@ -113,14 +113,14 @@ struct Volume {
 
   string name() const @trusted {
     if (auto n = "Name" in data.object) {
-      return n.str;
+      return n.toString;
     }
     return "";
   }
 
   string driver() const @trusted {
     if (auto d = "Driver" in data.object) {
-      return d.str;
+      return d.toString;
     }
     return "";
   }
@@ -146,21 +146,21 @@ struct Network {
 
   string name() const @trusted {
     if (auto n = "Name" in data.object) {
-      return n.str;
+      return n.toString;
     }
     return "";
   }
 
   string id() const @trusted {
     if (auto i = "Id" in data.object) {
-      return i.str;
+      return i.toString;
     }
     return "";
   }
 
   string driver() const @trusted {
     if (auto d = "Driver" in data.object) {
-      return d.str;
+      return d.toString;
     }
     return "";
   }

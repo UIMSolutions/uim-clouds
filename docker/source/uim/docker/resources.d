@@ -5,7 +5,7 @@
 *****************************************************************************************************************/
 module uim.docker.resources;
 
-import std.json : Json, JSONType;
+import uim.docker;
 
 // Container resource wrapper
 struct Container {
@@ -13,7 +13,7 @@ struct Container {
 
   string id() const @trusted {
     if (auto i = "Id" in data.object) {
-      return i.str;
+      return i.toString;
     }
     return "";
   }
@@ -21,7 +21,7 @@ struct Container {
   string name() const @trusted {
     if (auto names = "Names" in data.object) {
       if (names.type == Json.Type.array && names.array.length > 0) {
-        auto nameStr = names.array[0].str;
+        auto nameStr = names.array[0].toString;
         if (nameStr.length > 0 && nameStr[0] == '/') {
           return nameStr[1 .. $];
         }
@@ -33,21 +33,21 @@ struct Container {
 
   string status() const @trusted {
     if (auto s = "State" in data.object) {
-      return s.str;
+      return s.toString;
     }
     return "unknown";
   }
 
   string image() const @trusted {
     if (auto img = "Image" in data.object) {
-      return img.str;
+      return img.toString;
     }
     return "";
   }
 
   Json[] ports() const @trusted {
     if (auto p = "Ports" in data.object) {
-      if (p.type == Json.Type.array) {
+      if (p.isArray) {
         return p.array;
       }
     }
@@ -70,22 +70,18 @@ struct Image {
 
   string id() const @trusted {
     if (auto i = "Id" in data.object) {
-      return i.str;
+      return i.toString;
     }
     return "";
   }
 
   string[] repoTags() const @trusted {
     if (auto tags = "RepoTags" in data.object) {
-      if (tags.type == Json.Type.array) {
-        string[] result;
-        foreach (tag; tags.array) {
-          result ~= tag.str;
-        }
-        return result;
+      if (tags.isArray) {
+        return tags.toArray.map!(tag => tag.toString);
       }
     }
-    return [];
+    return null;
   }
 
   long size() const @trusted {
@@ -113,14 +109,14 @@ struct Volume {
 
   string name() const @trusted {
     if (auto n = "Name" in data.object) {
-      return n.str;
+      return n.toString;
     }
     return "";
   }
 
   string driver() const @trusted {
     if (auto d = "Driver" in data.object) {
-      return d.str;
+      return d.toString;
     }
     return "";
   }
@@ -146,21 +142,21 @@ struct Network {
 
   string name() const @trusted {
     if (auto n = "Name" in data.object) {
-      return n.str;
+      return n.toString;
     }
     return "";
   }
 
   string id() const @trusted {
     if (auto i = "Id" in data.object) {
-      return i.str;
+      return i.toString;
     }
     return "";
   }
 
   string driver() const @trusted {
     if (auto d = "Driver" in data.object) {
-      return d.str;
+      return d.toString;
     }
     return "";
   }
