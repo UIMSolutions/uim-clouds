@@ -6,10 +6,52 @@
 module uim.docker.resources;
 
 import uim.docker;
-@safe:
+
+// Image resource wrapper
+struct DockerImage {
+  Json data;
+
+  string id() const @trusted {
+    if (auto i = "Id" in data.object) {
+      return i.toString;
+    }
+    return "";
+  }
+
+  string[] repoTags() const @trusted {
+    if (auto tags = "RepoTags" in data.object) {
+      if (tags.isArray) {
+        string[] result;
+        foreach (tag; tags.array) {
+          result ~= tag.toString;
+        }
+        return result;
+      }
+    }
+    return [];
+  }
+
+  long size() const @trusted {
+    if (auto s = "Size" in data.object) {
+      if (s.isInteger) {
+        return s.integer;
+      }
+    }
+    return 0;
+  }
+
+  long created() const @trusted {
+    if (auto c = "Created" in data.object) {
+      if (c.isInteger) {
+        return c.integer;
+      }
+    }
+    return 0;
+  }
+}
 
 // Volume resource wrapper
-struct Volume {
+struct DockerVolume {
   Json data;
 
   string name() const @trusted {
@@ -41,42 +83,3 @@ struct Volume {
   }
 }
 
-// Network resource wrapper
-struct Network {
-  Json data;
-
-  string name() const @trusted {
-    if (auto n = "Name" in data.object) {
-      return n.toString;
-    }
-    return "";
-  }
-
-  string id() const @trusted {
-    if (auto i = "Id" in data.object) {
-      return i.toString;
-    }
-    return "";
-  }
-
-  string driver() const @trusted {
-    if (auto d = "Driver" in data.object) {
-      return d.toString;
-    }
-    return "";
-  }
-
-  Json scopeValue() const @trusted {
-    if (auto s = "Scope" in data.object) {
-      return *s;
-    }
-    return Json("local");
-  }
-
-  Json containers() const @trusted {
-    if (auto c = "Containers" in data.object) {
-      return *c;
-    }
-    return Json.emptyObject;
-  }
-}

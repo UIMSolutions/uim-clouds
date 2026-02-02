@@ -6,6 +6,7 @@
 module uim.docker.classes.container;
 
 import uim.docker;
+@safe:
 
 // Container resource wrapper
 class DockerContainer {

@@ -1,6 +1,7 @@
 module uim.docker.classes.network;
 
 import uim.docker;
+@safe:
 
 // Network resource wrapper
 class DockerNetwork {

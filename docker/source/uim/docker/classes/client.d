@@ -6,7 +6,6 @@
 module uim.docker.classes.client;
 
 import uim.docker;
-
 @safe:
 
 /// Docker API HTTP client.
@@ -53,7 +52,7 @@ class DockerClient {
           .statusCode));
     }
     return response.data.isArray ?
-      response.data.array.map!(item => new DockerContainer(item)) : null;
+      response.data.toArray.map!(item => new DockerContainer(item)) : null;
   }
 
   /// Gets a single container by ID or name.
@@ -162,7 +161,7 @@ class DockerClient {
       enforce(false, "Failed to list networks: %d".format(response.statusCode));
     }
     return response.data.isArray ?
-      response.data.array.map(item => new DockerNetwork(item)) : null;
+      response.data.toArray.map(item => new DockerNetwork(item)) : null;
   }
 
   /// Creates an exec instance in a container.

@@ -11,7 +11,7 @@ targetName "uim-kubernetes"
 targetType "library"
 
 // Dependencies
-dependency "uim-framework" version="~>26.1.4"
+dependency "uim-framework" version="~>26.2.1"
 
 // Configurations
 configuration "default" {
