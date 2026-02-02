@@ -21,7 +21,7 @@ struct K8SConfigMap {
     if (auto d = "data" in resource.data.object) {
       return *d;
     }
-    return Json.object;
+    return Json.emptyObject;
   }
 
   string get(string key) const @trusted {

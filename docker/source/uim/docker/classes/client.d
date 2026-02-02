@@ -46,6 +46,7 @@ class DockerClient {
   /// Lists all containers.
   DockerContainer[] listContainers(bool all = false) {
     string path = "/" ~ _apiVersion ~ "/containers/json"~(all ? "?all=true" : "");
+
     auto response = doRequest("GET", path, Json());
     if (response.statusCode != 200) {
       enforce(false, format("Failed to list containers: %d", response
@@ -72,7 +73,7 @@ class DockerClient {
     string path = "/" ~ _apiVersion ~ "/containers/create?name=" ~ name;
 
     auto response = doRequest("POST", path, config);
-    if (!response.statusCode != 201) {
+    if (response.statusCode != 201) {
       enforce(false, format("Failed to create container: %d", response.statusCode));
     }
     if (auto id = "Id" in response.data.object) {
@@ -86,8 +87,8 @@ class DockerClient {
     string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "/start";
 
     auto response = doRequest("POST", path, Json());
-    if (!response.statusCode != 204 && !response.statusCode != 304) {
-      enforce(false, format("Failed to start container: %d", response.statusCode));
+    if (response.statusCode != 204 && response.statusCode != 304) {
+      enforce(false, "Failed to start container: %d".format(response.statusCode));
     }
   }
 
@@ -95,8 +96,8 @@ class DockerClient {
   void stopContainer(string idOrName, int timeout = 10) {
     string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "/stop?t=" ~ format("%d", timeout);
     auto response = doRequest("POST", path, Json());
-    if (!response.statusCode != 204) {
-      enforce(false, format("Failed to stop container: %d", response.statusCode));
+    if (response.statusCode != 204) {
+      enforce(false, "Failed to stop container: %d".format(response.statusCode));
     }
   }
 
@@ -106,7 +107,7 @@ class DockerClient {
         : "false") ~ "&v=" ~ (removeVolumes ? "true" : "false");
     auto response = doRequest("DELETE", path, Json());
 
-    if (!response.statusCode != 204) {
+    if (response.statusCode != 204) {
       enforce(false, "Failed to remove container: %d".format(
           response.statusCode));
     }
@@ -117,7 +118,7 @@ class DockerClient {
         : "false") ~ "&stderr=" ~ (stderr ? "true" : "false");
     auto response = doRequest("GET", path, Json());
 
-    if (!response.statusCode != 200) {
+    if (response.statusCode != 200) {
       enforce(false, "Failed to get logs: %d".format(response.statusCode));
     }
     return response.logText;

@@ -27,7 +27,7 @@ class K8SDeployment {
 
   size_t desiredReplicas() const @trusted {
     if (auto r = "replicas" in spec().object) {
-      if (r.type == Json.Type.integer) {
+      if (r.isInteger) {
         return cast(size_t) r.integer;
       }
     }
@@ -36,7 +36,7 @@ class K8SDeployment {
 
   size_t readyReplicas() const @trusted {
     if (auto rr = "readyReplicas" in status().object) {
-      if (rr.type == Json.Type.integer) {
+      if (rr.isInteger) {
         return cast(size_t) rr.integer;
       }
     }
@@ -45,7 +45,7 @@ class K8SDeployment {
 
   size_t updatedReplicas() const @trusted {
     if (auto ur = "updatedReplicas" in status().object) {
-      if (ur.type == Json.Type.integer) {
+      if (ur.isInteger) {
         return cast(size_t) ur.integer;
       }
     }

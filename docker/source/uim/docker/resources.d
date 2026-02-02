@@ -6,99 +6,7 @@
 module uim.docker.resources;
 
 import uim.docker;
-
-// Container resource wrapper
-struct Container {
-  Json data;
-
-  string id() const @trusted {
-    if (auto i = "Id" in data.object) {
-      return i.toString;
-    }
-    return "";
-  }
-
-  string name() const @trusted {
-    if (auto names = "Names" in data.object) {
-      if (names.isArray && names.array.length > 0) {
-        auto nameStr = names.array[0].toString;
-        return nameStr.length > 0 && nameStr[0] == '/' ? nameStr[1 .. $] : nameStr;
-      }
-    }
-    return "";
-  }
-
-  string status() const @trusted {
-    if (auto s = "State" in data.object) {
-      return s.toString;
-    }
-    return "unknown";
-  }
-
-  string image() const @trusted {
-    if (auto img = "Image" in data.object) {
-      return img.toString;
-    }
-    return "";
-  }
-
-  Json[] ports() const @trusted {
-    if (auto p = "Ports" in data.object) {
-      if (p.isArray) {
-        return p.array;
-      }
-    }
-    return [];
-  }
-
-  string[] labels() const @trusted {
-    if (auto l = "Labels" in data.object) {
-      if (l.type == Json.Type.object) {
-        return l.object.keys;
-      }
-    }
-    return [];
-  }
-}
-
-// Image resource wrapper
-struct Image {
-  Json data;
-
-  string id() const @trusted {
-    if (auto i = "Id" in data.object) {
-      return i.toString;
-    }
-    return "";
-  }
-
-  string[] repoTags() const @trusted {
-    if (auto tags = "RepoTags" in data.object) {
-      if (tags.isArray) {
-        return tags.toArray.map!(tag => tag.toString);
-      }
-    }
-    return null;
-  }
-
-  long size() const @trusted {
-    if (auto s = "Size" in data.object) {
-      if (s.type == Json.Type.integer) {
-        return s.integer;
-      }
-    }
-    return 0;
-  }
-
-  long created() const @trusted {
-    if (auto c = "Created" in data.object) {
-      if (c.type == Json.Type.integer) {
-        return c.integer;
-      }
-    }
-    return 0;
-  }
-}
+@safe:
 
 // Volume resource wrapper
 struct Volume {
@@ -129,7 +37,7 @@ struct Volume {
     if (auto l = "Labels" in data.object) {
       return *l;
     }
-    return Json.object;
+    return Json.emptyObject;
   }
 }
 
@@ -169,6 +77,6 @@ struct Network {
     if (auto c = "Containers" in data.object) {
       return *c;
     }
-    return Json.object;
+    return Json.emptyObject;
   }
 }

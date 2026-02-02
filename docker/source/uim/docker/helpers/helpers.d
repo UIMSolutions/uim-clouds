@@ -50,29 +50,23 @@ Json createVolumeMounts(string[string] mounts) {
 
 /// Creates environment variables from map.
 string[] createEnvArray(string[string] env) {
-  string[] result;
-  foreach (key, value; env) {
-    result ~= key ~ "=" ~ value;
-  }
-  return result;
+  return env.byKeyValue.map!(kv => kv.key ~ "=" ~ kv.value).array;
 }
 
 /// Creates a volume creation config.
 Json createVolumeConfig(string name, string driver = "local") {
-  Json config = Json([
+  return [
     "Name": Json(name),
     "Driver": Json(driver)
-  ]);
-  return config;
+  ].toJson;
 }
 
 /// Creates a network creation config.
 Json createNetworkConfig(string name, string driver = "bridge") {
-  Json config = Json([
+  return [
     "Name": Json(name),
     "Driver": Json(driver)
-  ]);
-  return config;
+  ].toJson;
 }
 
 /// Parses image reference into components.

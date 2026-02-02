@@ -3,13 +3,29 @@
 * License: Subject to the terms of the Apache 2.0 license, as written in the included LICENSE.txt file.
 * Authors: Ozan Nurettin Süel (aka UIManufaktur)
 *****************************************************************************************************************/
-module uim.docker.resources;
+module uim.docker.classes.image;
 
 import uim.docker;
+@safe:
 
 // Image resource wrapper
-struct DockerImage {
-  Json data;
+class DockerImage {
+this() {
+    _data = Json.emptyObject;
+}
+
+this(Json data) {
+    this.data = data;
+  }
+
+  protected Json _data;
+    @property Json data() const @trusted {
+        return _data;
+    }
+
+    @property void data(Json value) @trusted {
+        _data = value;
+    }
 
   string id() const @trusted {
     if (auto i = "Id" in data.object) {
@@ -21,14 +37,10 @@ struct DockerImage {
   string[] repoTags() const @trusted {
     if (auto tags = "RepoTags" in data.object) {
       if (tags.isArray) {
-        string[] result;
-        foreach (tag; tags.array) {
-          result ~= tag.toString;
-        }
-        return result;
+        return tags.toArray.map!(tag => tag.toString);
       }
     }
-    return [];
+    return null;
   }
 
   long size() const @trusted {
@@ -49,37 +61,3 @@ struct DockerImage {
     return 0;
   }
 }
-
-// Volume resource wrapper
-struct DockerVolume {
-  Json data;
-
-  string name() const @trusted {
-    if (auto n = "Name" in data.object) {
-      return n.toString;
-    }
-    return "";
-  }
-
-  string driver() const @trusted {
-    if (auto d = "Driver" in data.object) {
-      return d.toString;
-    }
-    return "";
-  }
-
-  Json mountpoint() const @trusted {
-    if (auto m = "Mountpoint" in data.object) {
-      return *m;
-    }
-    return Json("");
-  }
-
-  Json labels() const @trusted {
-    if (auto l = "Labels" in data.object) {
-      return *l;
-    }
-    return Json.emptyObject;
-  }
-}
-

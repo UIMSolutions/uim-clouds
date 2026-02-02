@@ -58,20 +58,20 @@ class K8SResource : IK8SResource{
     if (auto m = "metadata" in data.object) {
       return *m;
     }
-    return Json.object;
+    return Json.emptyObject;
   }
 
   Json spec() const @trusted {
     if (auto s = "spec" in data.object) {
       return *s;
     }
-    return Json.object;
+    return Json.emptyObject;
   }
 
   Json status() const @trusted {
     if (auto st = "status" in data.object) {
       return *st;
     }
-    return Json.object;
+    return Json.emptyObject;
   }
 }
