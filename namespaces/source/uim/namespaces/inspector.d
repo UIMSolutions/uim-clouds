@@ -5,15 +5,7 @@
 *****************************************************************************************************************/
 module uim.namespaces.inspector;
 
-import std.file : readText, exists, isFile;
-import std.string : split, strip, startsWith;
-import std.conv : to;
-import std.format : format;
-import std.array : split;
-import std.algorithm : splitter;
-
-import uim.namespaces.types;
-import uim.namespaces.syscalls;
+import uim.namespaces;
 
 @safe:
 
