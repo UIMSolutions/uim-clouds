@@ -6,7 +6,7 @@
 module uim.namespaces;
 
 public {
-  import uim.core;
+  import uim.oop;
 
   import uim.namespaces.types;
   import uim.namespaces.syscalls;
