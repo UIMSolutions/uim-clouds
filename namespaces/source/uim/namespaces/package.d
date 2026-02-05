@@ -13,4 +13,5 @@ public {
   import uim.namespaces.exceptions;
   import uim.namespaces.helpers;
   import uim.namespaces.interfaces;
+  import uim.namespaces.struts;
 }
