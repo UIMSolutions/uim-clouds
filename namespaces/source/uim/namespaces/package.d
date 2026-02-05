@@ -8,9 +8,9 @@ module uim.namespaces;
 public {
   import uim.oop;
 
-  import uim.namespaces.types;
-  import uim.namespaces.syscalls;
-  import uim.namespaces.manager;
-  import uim.namespaces.inspector;
+  import uim.namespaces.classes;
+  import uim.namespaces.errors;
+  import uim.namespaces.exceptions;
   import uim.namespaces.helpers;
+  import uim.namespaces.interfaces;
 }
