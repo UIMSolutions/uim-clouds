@@ -47,7 +47,7 @@ class DockerClient {
     string path = "/" ~ _apiVersion ~ "/containers/json"~(all ? "?all=true" : "");
 
     auto response = doRequest("GET", path, Json());
-    if (response.statusCode != 200) {
+    if (!response.isSuccessful()) {
       enforce(false, format("Failed to list containers: %d", response
           .statusCode));
     }
@@ -60,7 +60,7 @@ class DockerClient {
     string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "/json";
 
     auto response = doRequest("GET", path, Json());
-    if (response.statusCode != 200) {
+    if (!response.isSuccessful()) {
       enforce(false, "Failed to get container %s: %d".format(idOrName, response
           .statusCode));
     }
@@ -86,7 +86,7 @@ class DockerClient {
     string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "/start";
 
     auto response = doRequest("POST", path, Json());
-    if (response.statusCode != 204 && response.statusCode != 304) {
+    if (!response.hasNoContent && !response.isNotModified) {
       enforce(false, "Failed to start container: %d".format(response.statusCode));
     }
   }
@@ -94,8 +94,9 @@ class DockerClient {
   /// Stops a container.
   void stopContainer(string idOrName, int timeout = 10) {
     string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "/stop?t=" ~ format("%d", timeout);
+    
     auto response = doRequest("POST", path, Json());
-    if (response.statusCode != 204) {
+    if (!response.hasNoContent) {
       enforce(false, "Failed to stop container: %d".format(response.statusCode));
     }
   }
@@ -115,9 +116,9 @@ class DockerClient {
   string getLogs(string idOrName, bool stdout = true, bool stderr = true) {
     string path = "/" ~ _apiVersion ~ "/containers/" ~ idOrName ~ "/logs?stdout=" ~ (stdout ? "true"
         : "false") ~ "&stderr=" ~ (stderr ? "true" : "false");
+    
     auto response = doRequest("GET", path, Json());
-
-    if (response.statusCode != 200) {
+    if (!response.isSuccessful()) {
       enforce(false, "Failed to get logs: %d".format(response.statusCode));
     }
     return response.logText;
@@ -127,41 +128,34 @@ class DockerClient {
   DockerImage[] listImages() {
     string path = "/" ~ _apiVersion ~ "/images/json";
     auto response = doRequest("GET", path, Json());
-    enforce(response.statusCode == 200, format("Failed to list images: %d", response.statusCode));
+    if (!response.isSuccessful()) {
+      enforce(false, "Failed to list images: %d".format(response.statusCode));
+    }
 
-    return response.data.isArray ?
-      response.data.toArray.map!(item => new DockerImage(item)) : null;
+    return response.data.toArray.map!(item => new DockerImage(item));
   }
 
   /// Lists all volumes.
   DockerVolume[] listVolumes() {
     string path = "/" ~ _apiVersion ~ "/volumes";
-    auto response = doRequest("GET", path, Json());
 
-    if (response.statusCode != 200) {
+    auto response = doRequest("GET", path, Json());
+    if (!response.isSuccessful()) {
       enforce(false, "Failed to list volumes: %d".format(response.statusCode));
     }
 
-    DockerVolume[] results;
-    if (
-      auto volumesObj = "Volumes" in response.data.object) {
-      results = volumesObj.isArray ?
-        volumesObj.toArray.map!(
-          vol => new DockerVolume(vol)) : null;
-    }
-    return results;
+    return response.data.getArray("Volumes").toArray.map!(vol => new DockerVolume(vol));
   }
 
   /// Lists all networks.
   DockerNetwork[] listNetworks() {
     string path = "/" ~ _apiVersion ~ "/networks";
-    auto response = doRequest("GET", path, Json());
 
-    if (!response.statusCode != 200) {
+    auto response = doRequest("GET", path, Json());
+    if (!response.isSuccessful()) {
       enforce(false, "Failed to list networks: %d".format(response.statusCode));
     }
-    return response.data.isArray ?
-      response.data.toArray.map(item => new DockerNetwork(item)) : null;
+    return response.data.getArray("Networks").toArray.map!(item => new DockerNetwork(item));
   }
 
   /// Creates an exec instance in a container.
@@ -173,11 +167,10 @@ class DockerClient {
     ].toJson;
     auto response = doRequest("POST", path, config);
 
-    if (!response.statusCode != 201) {
+    if (!response.isSuccessful()) {
       enforce(false, "Failed to create exec: %d".format(response.statusCode));
     }
-    return response.data.getString(
-      "Id");
+    return response.data.getString("Id");
   }
 
   /// Starts an exec instance.
@@ -187,7 +180,7 @@ class DockerClient {
       ["Detach": Json(false)]);
     auto response = doRequest("POST", path, config);
 
-    if (!response.statusCode != 200) {
+    if (!response.isSuccessful()) {
       enforce(false, "Failed to start exec: %d".format(response.statusCode));
     }
     return response.logText;
@@ -198,6 +191,19 @@ private:
     Json data;
     string logText;
     int statusCode;
+
+    bool isSuccessful() const {
+      return statusCode == 200;
+    }
+    bool isCreated() const {
+      return statusCode == 201;
+    }
+    bool hasNoContent() const {
+      return statusCode == 204;
+    }
+    bool isNotModified() const {
+      return statusCode == 304;
+    }
   }
 
   ApiResponse doRequest(string method, string path, Json body_) {

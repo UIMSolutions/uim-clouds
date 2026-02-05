@@ -14,7 +14,14 @@ class DockerContainer {
         data = Json.emptyObject;
     }
 
-  Json data;
+    protected Json _data;
+    @property Json data() const @trusted {
+        return _data;
+    }
+
+    @property void data(Json value) @trusted {
+        _data = value;
+    }
 
   string id() const @trusted {
     if (auto i = "Id" in data.object) {
@@ -35,23 +42,15 @@ class DockerContainer {
   }
 
   string status() const @trusted {
-    return data.hasKey("State") ? data["State"].toString : "unknown";
+    return data.getString("State", "unknown");
   }
 
   string image() const @trusted {
-    if (auto img = "Image" in data.object) {
-      return img.toString;
-    }
-    return "";
+    return data.getString("Image");
   }
 
   Json[] ports() const @trusted {
-    if (auto p = "Ports" in data.object) {
-      if (p.isArray) {
-        return p.array;
-      }
-    }
-    return [];
+    return data.getArray("Ports").toArray;
   }
 
   string[] labels() const @trusted {

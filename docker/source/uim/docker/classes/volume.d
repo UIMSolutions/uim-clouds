@@ -43,10 +43,7 @@ class DockerVolume {
     }
 
     Json mountpoint() const @trusted {
-        if (auto m = "Mountpoint" in data.object) {
-            return *m;
-        }
-        return Json("");
+        return data.getValue("Mountpoint", Jsaon(""));
     }
 
     Json labels() const @trusted {

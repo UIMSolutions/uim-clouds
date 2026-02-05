@@ -28,7 +28,7 @@ class K8SDeployment {
   size_t desiredReplicas() const @trusted {
     if (auto r = "replicas" in spec().object) {
       if (r.isInteger) {
-        return cast(size_t) r.integer;
+        return cast(size_t) r.toInteger;
       }
     }
     return 0;
@@ -37,7 +37,7 @@ class K8SDeployment {
   size_t readyReplicas() const @trusted {
     if (auto rr = "readyReplicas" in status().object) {
       if (rr.isInteger) {
-        return cast(size_t) rr.integer;
+        return cast(size_t) rr.toInteger;
       }
     }
     return 0;
@@ -46,7 +46,7 @@ class K8SDeployment {
   size_t updatedReplicas() const @trusted {
     if (auto ur = "updatedReplicas" in status().object) {
       if (ur.isInteger) {
-        return cast(size_t) ur.integer;
+        return cast(size_t) ur.toInteger;
       }
     }
     return 0;

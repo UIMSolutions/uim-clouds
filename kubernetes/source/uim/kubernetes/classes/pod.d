@@ -27,18 +27,10 @@ class K8SPod {
   }
 
   string phase() const @trusted {
-    if (auto p = "phase" in status().object) {
-      return p.to!string;
-    }
-    return "Unknown";
+    return status().getString("phase", "Unknown");
   }
 
   Json[] containerStatuses() const @trusted {
-    if (auto cs = "containerStatuses" in status().object) {
-      if (cs.isArray) {
-        return cs.array;
-      }
-    }
-    return null;
+    return status().getArray("containerStatuses").toArray;
   }
 }

@@ -23,15 +23,10 @@ class K8SService : IK8SService {
   }
 
   string serviceType() const {
-    return spec().hasKey("type") ? spec()["type"].to!string : "ClusterIP";
+    return spec().getString("type", "ClusterIP");
   }
 
   Json[] ports() const {
-    if (auto ports = "ports" in spec().object) {
-      if (ports.isArray) {
-        return ports.toArray;
-      }
-    }
-    return [];
+    return spec().getArray("ports").toArray;
   }
 }
