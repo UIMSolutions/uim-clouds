@@ -3,60 +3,11 @@
 * License: Subject to the terms of the Apache 2.0 license, as written in the included LICENSE.txt file.
 * Authors: Ozan Nurettin Süel (aka UIManufaktur)
 *****************************************************************************************************************/
-module uim.namespaces.helpers;
+module uim.namespaces.helpers.functions;
 
-import std.format : format;
-import std.conv : to;
-
-import uim.namespaces.types;
+import uim.namespaces;
 
 @safe:
-
-/// Creates a user namespace configuration with standard UID/GID mappings
-UserNamespaceConfig createStandardUserNamespace(uint insideUid = 0, uint insideGid = 0) {
-  UserNamespaceConfig config;
-  
-  IDMapping uidMap;
-  uidMap.insideId = insideUid;
-  uidMap.outsideId = 0;
-  uidMap.rangeSize = 65536;
-  config.uidMappings ~= uidMap;
-  
-  IDMapping gidMap;
-  gidMap.insideId = insideGid;
-  gidMap.outsideId = 0;
-  gidMap.rangeSize = 65536;
-  config.gidMappings ~= gidMap;
-  
-  config.denySetgroups = false;
-  
-  return config;
-}
-
-/// Creates a user namespace configuration with nested UID/GID ranges
-UserNamespaceConfig createNestedUserNamespace(
-  uint outerMinUid = 100000,
-  uint outerMinGid = 100000,
-  uint rangeSize = 65536
-) {
-  UserNamespaceConfig config;
-  
-  IDMapping uidMap;
-  uidMap.insideId = 0;
-  uidMap.outsideId = outerMinUid;
-  uidMap.rangeSize = rangeSize;
-  config.uidMappings ~= uidMap;
-  
-  IDMapping gidMap;
-  gidMap.insideId = 0;
-  gidMap.outsideId = outerMinGid;
-  gidMap.rangeSize = rangeSize;
-  config.gidMappings ~= gidMap;
-  
-  config.denySetgroups = true;
-  
-  return config;
-}
 
 /// Formats UID mapping for writing to uid_map
 string formatUIDMapping(IDMapping mapping) {
@@ -214,4 +165,45 @@ string createMountOptions(string[] options = []) {
     result ~= opt;
   }
   return result;
+}
+
+
+/// Convenience function to create namespace manager
+NamespaceManager createNamespaceManager() {
+  return new NamespaceManager();
+}
+
+/// Creates an isolated process with new namespaces
+/// Returns the child PID (0 for child process)
+void isolateProcess(NamespaceType[] types, void delegate() childFunc) {
+  createNamespaces(types);
+  childFunc();
+}
+
+/// Joins the specified process's namespaces
+void joinProcessNamespaces(int targetPid, NamespaceType[] types) {
+  auto manager = createNamespaceManager();
+  scope(exit) destroy(manager);
+  
+  foreach (type; types) {
+    manager.joinNamespace(targetPid, type);
+  }
+}
+
+/// Checks if running in a namespace different from host
+bool isInNamespace(NamespaceType type) @safe {
+  // This would compare the inode of current process namespace
+  // with the host namespace
+  return false;  // Placeholder
+}
+
+/// Gets the namespace inode for comparison
+ulong getNamespaceInode(int pid, NamespaceType type) @trusted {
+  auto namespaces = getProcessNamespaces(pid);
+  foreach (ns; namespaces) {
+    if (ns.type == namespaceTypeToString(type)) {
+      return ns.inode;
+    }
+  }
+  return 0;
 }

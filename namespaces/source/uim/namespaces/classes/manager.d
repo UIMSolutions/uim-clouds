@@ -1,19 +1,4 @@
-/****************************************************************************************************************
-* Copyright: © 2018-2026 Ozan Nurettin Süel (aka UIManufaktur)
-* License: Subject to the terms of the Apache 2.0 license, as written in the included LICENSE.txt file.
-* Authors: Ozan Nurettin Süel (aka UIManufaktur)
-*****************************************************************************************************************/
-module uim.namespaces.manager;
-
-import core.sys.posix.unistd : close;
-import std.exception : enforce;
-import std.format : format;
-
-import uim.namespaces.types;
-import uim.namespaces.syscalls;
-import uim.namespaces.inspector;
-
-@trusted:
+module uim.namespaces.classes.manager;
 
 /// Manages namespace lifecycle and operations
 class NamespaceManager {
@@ -149,42 +134,3 @@ class NamespaceManager {
   }
 }
 
-/// Convenience function to create namespace manager
-NamespaceManager createNamespaceManager() {
-  return new NamespaceManager();
-}
-
-/// Creates an isolated process with new namespaces
-/// Returns the child PID (0 for child process)
-void isolateProcess(NamespaceType[] types, void delegate() childFunc) {
-  createNamespaces(types);
-  childFunc();
-}
-
-/// Joins the specified process's namespaces
-void joinProcessNamespaces(int targetPid, NamespaceType[] types) {
-  auto manager = createNamespaceManager();
-  scope(exit) destroy(manager);
-  
-  foreach (type; types) {
-    manager.joinNamespace(targetPid, type);
-  }
-}
-
-/// Checks if running in a namespace different from host
-bool isInNamespace(NamespaceType type) @safe {
-  // This would compare the inode of current process namespace
-  // with the host namespace
-  return false;  // Placeholder
-}
-
-/// Gets the namespace inode for comparison
-ulong getNamespaceInode(int pid, NamespaceType type) @trusted {
-  auto namespaces = getProcessNamespaces(pid);
-  foreach (ns; namespaces) {
-    if (ns.type == namespaceTypeToString(type)) {
-      return ns.inode;
-    }
-  }
-  return 0;
-}

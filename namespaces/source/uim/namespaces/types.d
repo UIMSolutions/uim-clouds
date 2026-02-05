@@ -9,16 +9,6 @@ import std.conv : to;
 
 @safe:
 
-/// Enumeration of Linux namespace types
-enum NamespaceType {
-  PID = 0x20000000,      /// Process ID namespace
-  Network = 0x40000000,  /// Network namespace
-  IPC = 0x08000000,      /// Inter-process communication namespace
-  Mount = 0x00020000,    /// Mount filesystem namespace
-  UTS = 0x04000000,      /// UTS (hostname/domain) namespace
-  User = 0x10000000,     /// User and group ID namespace
-  Cgroup = 0x02000000    /// Cgroup namespace
-}
 
 /// String representation of namespace type
 string namespaceTypeToString(NamespaceType type) @safe {
@@ -137,20 +127,3 @@ struct MountInfo {
   }
 }
 
-/// Network namespace information
-struct NetworkNamespaceInfo {
-  int pid;               /// PID owning the namespace
-  string[] interfaces;   /// Network interfaces in this namespace
-  string[] routes;       /// Routes in this namespace
-  bool hasIpv4;          /// Has IPv4 configured
-  bool hasIpv6;          /// Has IPv6 configured
-}
-
-/// Cgroup information for a namespace
-struct CgroupInfo {
-  string path;           /// Cgroup path
-  string[] controllers;  /// Enabled controllers
-  string memoryLimit;    /// Memory limit (if set)
-  string cpuLimit;       /// CPU limit (if set)
-  string pidLimit;       /// PID limit (if set)
-}
