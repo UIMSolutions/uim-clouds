@@ -14,23 +14,31 @@ targetName "uim-clouds"
 dependency "uim-framework" version="~>26.2.1"
 
 // Internal Dependencies
+dependency ":aws" version="*"
 dependency ":azure" version="*"
+dependency ":gcp" version="*"
+dependency ":google-distributedcloud" version="*"
 dependency ":docker" version="*"
 dependency ":kubernetes" version="*"
 dependency ":lxc" version="*"
 dependency ":namespaces" version="*"
 dependency ":podman" version="*"
+dependency ":sap-btp" version="*"
 
 // Source files
 sourceFiles "./source/uim/clouds.d"
 
 // Subpackages
+subPackage "aws"
 subPackage "azure"
+subPackage "gcp"
+subPackage "google-distributedcloud"
 subPackage "docker"
 subPackage "kubernetes"
 subPackage "lxc"
 subPackage "namespaces"
 subPackage "podman"
+subPackage "sap-btp"
 
 buildRequirements "allowWarnings" "silenceDeprecations"
 buildOptions "ignoreDeprecations" "debugInfo"

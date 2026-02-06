@@ -1,0 +1,21 @@
+name "sap-btp"
+description "UIM SAP BTP - SAP Business Technology Platform API Client for D + vibe.d"
+authors "Ozan Nurettin Suel" "UI Manufaktur"
+license "Apache-2.0"
+
+// Target
+
+targetType "library"
+targetName "uim-sap-btp"
+
+// Dependencies
+
+dependency "uim-framework" version="~>26.2.1"
+dependency "vibe-d" version="*"
+
+// Source files
+
+sourcePaths "source"
+
+buildRequirements "allowWarnings" "silenceDeprecations"
+buildOptions "ignoreDeprecations" "debugInfo"
