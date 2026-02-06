@@ -9,15 +9,12 @@ public {
   import uim.oop;
 }
 
-public {
+public { // Package
   import uim.podman.classes;
+  import uim.podman.errors;
+  import uim.podman.exceptions;
   import uim.podman.helpers;
   import uim.podman.interfaces;
+  import uim.podman.structs;
 }
 
-public {
-  import uim.podman.config;
-  import uim.podman.resources;
-  import uim.podman.client;
-  import uim.podman.helpers;
-}

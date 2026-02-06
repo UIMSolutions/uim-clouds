@@ -6,21 +6,15 @@ import uim.podman;
 
 /// Creates a container config for a simple image run.
 Json createContainerConfig(string image, string[] cmd = [], string[] env = []) {
-  Json[] cmdArray;
-  foreach (c; cmd) {
-    cmdArray ~= Json(c);
-  }
-
-  Json[] envArray;
-  foreach (e; env) {
-    envArray ~= Json(e);
-  }
+  Json[] cmdArray = cmd.map!(c => Json(c)).array;
+  Json[] envArray = env.map!(e => Json(e)).array;
 
   Json config = Json([
-    "Image": Json(image),
-    "Cmd": Json(cmdArray),
-    "Env": Json(envArray)
+    "Image": image.toJson,
+    "Cmd": cmdArray.toJson,
+    "Env": envArray.toJson
   ]);
+
   return config;
 }
 /// 
@@ -33,7 +27,7 @@ unittest {
 
   Json config = createContainerConfig(image, cmd, env);
 
-  assert(config["Image"] == Json(image));
-  assert(config["Cmd"] == Json(cmd));
-  assert(config["Env"] == Json(env));
+  assert(config["Image"] == image.toJson);
+  assert(config["Cmd"] == cmdArray.toJson);
+  assert(config["Env"] == envArray.toJson);
 }

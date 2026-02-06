@@ -5,18 +5,15 @@ import uim.podman;
 
 /// Creates a pod config for a simple pod creation.
 Json createPodConfig(string name, string[] portBindings = []) {
-  Json[] ports;
-  foreach (port; portBindings) {
-    ports ~= Json(port);
-  }
+  Json[] ports = portBindings.map!(port => port.toJson).array;
 
   Json config = Json([
-    "Name": Json(name),
-    "Share": Json(["pid", "ipc", "uts"])
+    "Name": name.toJson,
+    "Share": ["pid", "ipc", "uts"].toJson
   ]);
   
   if (ports.length > 0) {
-    config["PortMappings"] = Json(ports);
+    config["PortMappings"] = ports.toJson;
   }
   
   return config;
