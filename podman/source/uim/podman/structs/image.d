@@ -2,6 +2,8 @@ module uim.podman.structs.image;
 
 import uim.podman;
 
+mixin(ShowModule!());
+
 @safe:
 
 /// Represents a Podman image.
@@ -10,7 +12,7 @@ struct Image {
   string[] repoTags;
   long created;
   long size;
-  string virtualSize;
+  long virtualSize;
   string[string] labels;
 
   this(Json data) {
@@ -18,13 +20,13 @@ struct Image {
       this.id = data["Id"].getString;
     }
     if (data.hasKey("RepoTags") && data["RepoTags"].isArray) {
-      this.repoTags ~= data["RepoTags"].toArray.map!(tag => tag.getString).array;
+      this.repoTags = data["RepoTags"].toArray.map!(tag => tag.getString).array;
     }
     if (data.hasKey("Created")) {
-      this.created = data["Created"].integer;
+      this.created = data["Created"].getInteger;
     }
     if (data.hasKey("Size")) {
-      this.size = data["Size"].integer;
+      this.size = data["Size"].getInteger;
     }
     if (data.hasKey("Labels") && data["Labels"].isObject) {
       foreach (key, value; data["Labels"].toMap) {

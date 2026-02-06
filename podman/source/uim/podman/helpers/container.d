@@ -2,6 +2,8 @@ module uim.podman.helpers.container;
 
 import uim.podman;
 
+mixin(ShowModule!());
+
 @safe:
 
 /// Creates a container config for a simple image run.
@@ -28,6 +30,6 @@ unittest {
   Json config = createContainerConfig(image, cmd, env);
 
   assert(config["Image"] == image.toJson);
-  assert(config["Cmd"] == cmdArray.toJson);
-  assert(config["Env"] == envArray.toJson);
+  assert(config["Cmd"] == cmd.toJson);
+  assert(config["Env"] == env.toJson);
 }

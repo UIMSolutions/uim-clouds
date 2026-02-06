@@ -1,6 +1,9 @@
 module uim.podman.helpers.resource;
 
 import uim.podman;
+
+mixin(ShowModule!());
+
 @safe:
 
 /// Creates resource limits for container.

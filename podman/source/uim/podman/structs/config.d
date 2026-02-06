@@ -1,6 +1,9 @@
 module uim.podman.structs.config;
 
 import uim.podman;
+
+mixin(ShowModule!());
+
 @safe:
 
 // Podman daemon connection configuration

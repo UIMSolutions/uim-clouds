@@ -1,6 +1,9 @@
 module uim.podman.structs.log;
 
 import uim.podman;
+
+mixin(ShowModule!());
+
 @safe:
 
 /// Represents container logs response.

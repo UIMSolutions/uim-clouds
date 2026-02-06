@@ -1,6 +1,9 @@
 module uim.podman.structs.network;
 
 import uim.podman;
+
+mixin(ShowModule!());
+
 @safe:
 
 /// Represents a Podman network.

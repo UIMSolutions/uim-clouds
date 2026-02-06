@@ -52,7 +52,8 @@ class PodmanClient {
   Container getContainer(string idOrName) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/json";
     auto response = doRequest("GET", path, Json());
-    enforce(response.statusCode == 200, format("Failed to get container %s: %d", idOrName, response.statusCode));
+    enforce(response.statusCode == 200, format("Failed to get container %s: %d", idOrName, response
+        .statusCode));
     return Container(response.data);
   }
 
@@ -60,7 +61,8 @@ class PodmanClient {
   string createContainer(string name, Json config) {
     string path = "/" ~ apiVersion ~ "/containers/create?name=" ~ name;
     auto response = doRequest("POST", path, config);
-    enforce(response.statusCode == 201, format("Failed to create container: %d", response.statusCode));
+    enforce(response.statusCode == 201, format("Failed to create container: %d", response
+        .statusCode));
     return response.data.isString("Id") ? response.data.getString("Id") : "";
   }
 
@@ -68,7 +70,8 @@ class PodmanClient {
   void startContainer(string idOrName) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/start";
     auto response = doRequest("POST", path, Json());
-    enforce(response.statusCode == 204 || response.statusCode == 304, format("Failed to start container: %d", response.statusCode));
+    enforce(response.statusCode == 204 || response.statusCode == 304, format(
+        "Failed to start container: %d", response.statusCode));
   }
 
   /// Stops a container.
@@ -80,16 +83,20 @@ class PodmanClient {
 
   /// Removes a container.
   void removeContainer(string idOrName, bool force = false, bool removeVolumes = false) {
-    string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "?force=" ~ (force ? "true" : "false") ~ "&v=" ~ (removeVolumes ? "true" : "false");
+    string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "?force=" ~ (force ? "true"
+        : "false") ~ "&v=" ~ (removeVolumes ? "true" : "false");
     auto response = doRequest("DELETE", path, Json());
-    enforce(response.statusCode == 204, format("Failed to remove container: %d", response.statusCode));
+    enforce(response.statusCode == 204, format("Failed to remove container: %d", response
+        .statusCode));
   }
 
   /// Gets container logs.
   LogsResponse getContainerLogs(string idOrName, bool stdout = true, bool stderr = false) {
-    string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/logs?stdout=" ~ (stdout ? "true" : "false") ~ "&stderr=" ~ (stderr ? "true" : "false");
+    string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/logs?stdout=" ~ (stdout ? "true"
+        : "false") ~ "&stderr=" ~ (stderr ? "true" : "false");
     auto response = doRequest("GET", path, Json());
-    enforce(response.statusCode == 200, format("Failed to get container logs: %d", response.statusCode));
+    enforce(response.statusCode == 200, format("Failed to get container logs: %d", response
+        .statusCode));
     return LogsResponse(response.rawOutput);
   }
 
@@ -104,7 +111,8 @@ class PodmanClient {
   void unpauseContainer(string idOrName) {
     string path = "/" ~ apiVersion ~ "/containers/" ~ idOrName ~ "/unpause";
     auto response = doRequest("POST", path, Json());
-    enforce(response.statusCode == 204, format("Failed to unpause container: %d", response.statusCode));
+    enforce(response.statusCode == 204, format("Failed to unpause container: %d", response
+        .statusCode));
   }
 
   // Image operations
@@ -159,7 +167,8 @@ class PodmanClient {
   Pod getPod(string nameOrId) {
     string path = "/" ~ apiVersion ~ "/pods/" ~ nameOrId ~ "/json";
     auto response = doRequest("GET", path, Json());
-    enforce(response.statusCode == 200, format("Failed to get pod %s: %d", nameOrId, response.statusCode));
+    enforce(response.statusCode == 200, format("Failed to get pod %s: %d", nameOrId, response
+        .statusCode));
     return Pod(response.data);
   }
 
@@ -201,11 +210,9 @@ class PodmanClient {
     enforce(response.statusCode == 200, format("Failed to list volumes: %d", response.statusCode));
 
     Volume[] results;
-    if (auto volumes = "Volumes" in response.data.object) {
-      if (volumes.isArray) {
-        foreach (item; volumes.array) {
-          results ~= Volume(item);
-        }
+    if (response.data.isArray("Volumes")) {
+      foreach (item; response.data.getArray("Volumes")) {
+        results ~= Volume(item);
       }
     }
     return results;
@@ -214,9 +221,10 @@ class PodmanClient {
   /// Creates a volume.
   string createVolume(string name, string driver = "local", string[string] options = null) {
     Json config = Json([
-      "Name": Json(name),
-      "Driver": Json(driver)
-    ]);
+        "Name": Json(name),
+        "Driver": Json(driver)
+      ]);
+
     if (options.length > 0) {
       Json[string] opts;
       foreach (key, value; options) {
@@ -224,10 +232,11 @@ class PodmanClient {
       }
       config["Options"] = Json(opts);
     }
+    
     string path = "/" ~ apiVersion ~ "/volumes/create";
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create volume: %d", response.statusCode));
-    return response.data.isString("Name") ? response.data.getString("Name") : ""; 
+    return response.data.isString("Name") ? response.data.getString("Name") : "";
   }
 
   /// Removes a volume.
@@ -257,13 +266,13 @@ class PodmanClient {
   /// Creates a network.
   string createNetwork(string name, string driver = "bridge") {
     Json config = Json([
-      "Name": Json(name),
-      "Driver": Json(driver)
-    ]);
+        "Name": Json(name),
+        "Driver": Json(driver)
+      ]);
     string path = "/" ~ apiVersion ~ "/networks/create";
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create network: %d", response.statusCode));
-    return response.data.isString("Id") ? response.data.getString("Id") : ""; 
+    return response.data.isString("Id") ? response.data.getString("Id") : "";
   }
 
   /// Removes a network.

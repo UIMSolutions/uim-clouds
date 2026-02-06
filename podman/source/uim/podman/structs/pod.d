@@ -1,6 +1,9 @@
 module uim.podman.structs.pod;
 
 import uim.podman;
+
+mixin(ShowModule!());
+
 @safe:
 
 /// Represents a Podman pod.
@@ -10,7 +13,7 @@ struct Pod {
   string status;
   long created;
   long started;
-  int numContainers;
+  size_t numberOfContainers;
   string[] containerIds;
   string[string] labels;
 
@@ -28,7 +31,7 @@ struct Pod {
       this.created = data["Created"].getInteger;
     }
     if (data.hasKey("Containers") && data["Containers"].isArray) {
-      this.numContainers = data["Containers"].toArray.length;
+      this.numberOfContainers = data["Containers"].toArray.length;
     }
     if (data.hasKey("Labels") && data["Labels"].isObject) {
       foreach (key, value; data["Labels"].toMap) {

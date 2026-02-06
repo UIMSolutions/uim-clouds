@@ -2,6 +2,8 @@ module uim.podman.helpers.environment;
 
 import uim.podman;
 
+mixin(ShowModule!());
+
 @safe:
 
 /// Creates environment variables array from key-value pairs.

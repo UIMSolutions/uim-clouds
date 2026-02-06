@@ -1,6 +1,9 @@
 module uim.podman.helpers.pod;
 
 import uim.podman;
+
+mixin(ShowModule!());
+
 @safe:
 
 /// Creates a pod config for a simple pod creation.

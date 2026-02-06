@@ -2,6 +2,8 @@ module uim.podman.helpers.network;
 
 import uim.podman;
 
+mixin(ShowModule!());
+
 @safe:
 /** 
  * Creates a JSON object for network settings to be used in container creation or update.
@@ -25,7 +27,7 @@ Json createNetworkSettings(string networkName, string ipAddress = "", string gat
 
   if (ipAddress.length > 0) {
     settings["EndpointsConfig"][networkName]["IPAMConfig"] = [
-      "IPv4Address": ipAddress.toJson
+      "IPv4Address": ipAddress
     ].toJson;
   }
 

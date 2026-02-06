@@ -2,6 +2,8 @@ module uim.podman.helpers.volume;
 
 import uim.podman;
 
+mixin(ShowModule!());
+
 @safe:
 
 /// Creates volume mounts for container.
@@ -16,8 +18,8 @@ Json createVolumeMounts(string[string] mounts) {
 // Creates a single volume mount configuration.
 Json createVolumeMount(string containerPath, string hostPath) {
   return [
-      "Source": Json(hostPath),
-      "Target": Json(containerPath),
-      "Type": Json("bind")
+      "Source": hostPath,
+      "Target": containerPath,
+      "Type": "bind"
     ].toJson;
 }

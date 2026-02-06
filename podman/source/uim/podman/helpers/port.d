@@ -2,6 +2,8 @@ module uim.podman.helpers.port;
 
 import uim.podman;
 
+mixin(ShowModule!());
+
 @safe:
 
 /// Creates port bindings for container.

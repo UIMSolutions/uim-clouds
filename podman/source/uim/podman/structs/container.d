@@ -7,6 +7,8 @@ module uim.podman.structs.container;
 
 import uim.podman;
 
+mixin(ShowModule!());
+
 @safe:
 
 /// Represents a Podman container.
@@ -25,7 +27,7 @@ struct Container {
 
   this(Json data) {
     if (data.hasKey("Id")) id = data["Id"].getString;
-    if (data.hasKey("Names") && data["Names"].isArray && data["Names"].toArray.length > 0) {
+    if (data["Names"].isArray && data["Names"].toArray.length > 0) {
       name = data["Names"].toArray[0].getString;
     }
     if (data.hasKey("Image")) {
