@@ -11,52 +11,7 @@ import uim.podman;
 
 
 
-/// Creates port bindings for container.
-Json createPortBindings(string[string] portMap) {
-  Json[string] bindings;
-  foreach (containerPort, hostPort; portMap) {
-    bindings[containerPort] = Json([
-      Json([
-        "HostPort": Json(hostPort)
-      ])
-    ]);
-  }
-  return Json(bindings);
-}
 
-/// Creates volume mounts for container.
-Json createVolumeMounts(string[string] mounts) {
-  Json[] volumeList;
-  foreach (containerPath, hostPath; mounts) {
-    volumeList ~= Json([
-      "Source": Json(hostPath),
-      "Target": Json(containerPath),
-      "Type": Json("bind")
-    ]);
-  }
-  return Json(volumeList);
-}
-
-
-
-/// Creates a pod config for a simple pod creation.
-Json createPodConfig(string name, string[] portBindings = []) {
-  Json[] ports;
-  foreach (port; portBindings) {
-    ports ~= Json(port);
-  }
-
-  Json config = Json([
-    "Name": Json(name),
-    "Share": Json(["pid", "ipc", "uts"])
-  ]);
-  
-  if (ports.length > 0) {
-    config["PortMappings"] = Json(ports);
-  }
-  
-  return config;
-}
 
 
 
@@ -78,32 +33,6 @@ Json stringMapToJSON(string[string] map) {
   return Json(result);
 }
 
-/// Creates resource limits for container.
-Json createResourceLimits(long memoryBytes = 0, long cpuNanos = 0, long cpuShares = 1024) {
-  Json limits = Json([
-    "MemorySwap": Json(-1),
-    "CpuShares": Json(cpuShares)
-  ]);
-  
-  if (memoryBytes > 0) {
-    limits["Memory"] = Json(memoryBytes);
-  }
-  
-  if (cpuNanos > 0) {
-    limits["CpuNano"] = Json(cpuNanos);
-  }
-  
-  return limits;
-}
 
-/// Creates health check configuration.
-Json createHealthCheck(string[] testCmd, int interval = 30, int timeout = 10, int retries = 3, int startPeriod = 0) {
-  Json healthCheck = Json([
-    "Test": Json(testCmd),
-    "Interval": Json(interval * 1_000_000_000L),  // Convert to nanoseconds
-    "Timeout": Json(timeout * 1_000_000_000L),
-    "Retries": Json(retries),
-    "StartPeriod": Json(startPeriod * 1_000_000_000L)
-  ]);
-  return healthCheck;
-}
+
+

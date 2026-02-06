@@ -61,10 +61,7 @@ class PodmanClient {
     string path = "/" ~ apiVersion ~ "/containers/create?name=" ~ name;
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create container: %d", response.statusCode));
-    if (auto id = "Id" in response.data.object) {
-      return id.toString;
-    }
-    return "";
+    return response.data.isString("Id") ? response.data.getString("Id") : "";
   }
 
   /// Starts a container.
@@ -171,10 +168,7 @@ class PodmanClient {
     string path = "/" ~ apiVersion ~ "/pods/create?name=" ~ name;
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create pod: %d", response.statusCode));
-    if (auto id = "Id" in response.data.object) {
-      return id.toString;
-    }
-    return "";
+    return response.data.isString("Id") ? response.data.getString("Id") : "";
   }
 
   /// Starts a pod.
@@ -233,10 +227,7 @@ class PodmanClient {
     string path = "/" ~ apiVersion ~ "/volumes/create";
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create volume: %d", response.statusCode));
-    if (auto name = "Name" in response.data.object) {
-      return name.toString;
-    }
-    return "";
+    return response.data.isString("Name") ? response.data.getString("Name") : ""; 
   }
 
   /// Removes a volume.
@@ -272,10 +263,7 @@ class PodmanClient {
     string path = "/" ~ apiVersion ~ "/networks/create";
     auto response = doRequest("POST", path, config);
     enforce(response.statusCode == 201, format("Failed to create network: %d", response.statusCode));
-    if (auto id = "Id" in response.data.object) {
-      return id.toString;
-    }
-    return "";
+    return response.data.isString("Id") ? response.data.getString("Id") : ""; 
   }
 
   /// Removes a network.

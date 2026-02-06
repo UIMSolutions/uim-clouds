@@ -24,24 +24,24 @@ struct Container {
   string exitCode;
 
   this(Json data) {
-    if (auto id = "Id" in data.object) id_data = id.toString;
-    if (auto names = "Names" in data.object && names.isArray && names.array.length > 0) {
-      name = names.array[0].toString;
+    if (data.hasKey("Id")) id = data["Id"].toString;
+    if (data.hasKey("Names") && data["Names"].isArray && data["Names"].array.length > 0) {
+      name = data["Names"].array[0].toString;
     }
-    if (auto image = "Image" in data.object) {
-      this.image = image.toString;
+    if (data.hasKey("Image")) {
+      this.image = data["Image"].toString;
     }
-    if (auto state = "State" in data.object) {
-      this.state = state.toString;
+    if (data.hasKey("State")) {
+      this.state = data["State"].toString;
     }
-    if (auto status = "Status" in data.object) {
-      this.status = status.toString;
+    if (data.hasKey("Status")) {
+      this.status = data["Status"].toString;
     }
-    if (auto created = "Created" in data.object) {
-      this.created = created.integer;
+    if (data.hasKey("Created")) {
+      this.created = data["Created"].integer;
     }
-    if (auto labels = "Labels" in data.object && labels.type == Json.Type.object) {
-      foreach (key, value; labels.object) {
+    if (data.hasKey("Labels") && data["Labels"].type == Json.Type.object) {
+      foreach (key, value; data["Labels"].object) {
         this.labels[key] = value.toString;
       }
     }
@@ -58,22 +58,22 @@ struct Image {
   string[string] labels;
 
   this(Json data) {
-    if (auto id = "Id" in data.object) {
-      this.id = id.toString;
+    if (data.hasKey("Id")) {
+      this.id = data["Id"].toString;
     }
-    if (auto repoTags = "RepoTags" in data.object && repoTags.isArray) {
-      foreach (tag; repoTags.array) {
+    if (data.hasKey("RepoTags") && data["RepoTags"].isArray) {
+      foreach (tag; data["RepoTags"].array) {
         this.repoTags ~= tag.toString;
       }
     }
-    if (auto created = "Created" in data.object) {
-      this.created = created.integer;
+    if (data.hasKey("Created")) {
+      this.created = data["Created"].integer;
     }
-    if (auto size = "Size" in data.object) {
-      this.size = size.integer;
+    if (data.hasKey("Size")) {
+      this.size = data["Size"].integer;
     }
-    if (auto labels = "Labels" in data.object && labels.type == Json.Type.object) {
-      foreach (key, value; labels.object) {
+    if (data.hasKey("Labels") && data["Labels"].type == Json.Type.object) {
+      foreach (key, value; data["Labels"].object) {
         this.labels[key] = value.toString;
       }
     }
@@ -92,23 +92,23 @@ struct Pod {
   string[string] labels;
 
   this(Json data) {
-    if (auto id = "Id" in data.object) {
-      this.id = id.toString;
+    if (data.hasKey("Id")) {
+      this.id = data["Id"].toString;
     }
-    if (auto name = "Name" in data.object) {
-      this.name = name.toString;
+    if (data.hasKey("Name")) {
+      this.name = data["Name"].toString;
     }
-    if (auto status = "Status" in data.object) {
-      this.status = status.toString;
+    if (data.hasKey("Status")) {
+      this.status = data["Status"].toString;
     }
-    if (auto created = "Created" in data.object) {
-      this.created = created.integer;
+    if (data.hasKey("Created")) {
+      this.created = data["Created"].integer;
     }
-    if (auto containers = "Containers" in data.object && containers.isArray) {
-      this.numContainers = cast(int)containers.array.length;
+    if (data.hasKey("Containers") && data["Containers"].isArray) {
+      this.numContainers = cast(int)data["Containers"].array.length;
     }
-    if (auto labels = "Labels" in data.object && labels.type == Json.Type.object) {
-      foreach (key, value; labels.object) {
+    if (data.hasKey("Labels") && data["Labels"].type == Json.Type.object) {
+      foreach (key, value; data["Labels"].object) {
         this.labels[key] = value.toString;
       }
     }
@@ -120,21 +120,21 @@ struct Volume {
   string name;
   string driver;
   string mountPoint;
-  string[] labels;
+  string[string] labels;
   Json options;
 
   this(Json data) {
-    if (auto name = "Name" in data.object) {
-      this.name = name.toString;
+    if (data.hasKey("Name")) {
+      this.name = data["Name"].toString;
     }
-    if (auto driver = "Driver" in data.object) {
-      this.driver = driver.toString;
+    if (data.hasKey("Driver")) {
+      this.driver = data["Driver"].toString;
     }
-    if (auto mountPoint = "Mountpoint" in data.object) {
-      this.mountPoint = mountPoint.toString;
+    if (data.hasKey("Mountpoint")) {
+      this.mountPoint = data["Mountpoint"].toString;
     }
-    if (auto options = "Options" in data.object) {
-      this.options = options;
+    if (data.hasKey("Options")) {
+      this.options = data["Options"];
     }
   }
 }
@@ -148,17 +148,17 @@ struct Network {
   string ipam;
 
   this(Json data) {
-    if (auto id = "Id" in data.object) {
-      this.id = id.toString;
+    if (data.hasKey("Id")) {
+      this.id = data["Id"].toString;
     }
-    if (auto name = "Name" in data.object) {
-      this.name = name.toString;
+    if (data.hasKey("Name")) {
+      this.name = data["Name"].toString;
     }
-    if (auto driver = "Driver" in data.object) {
-      this.driver = driver.toString;
+    if (data.hasKey("Driver")) {
+      this.driver = data["Driver"].toString;
     }
-    if (auto scope_ = "Scope" in data.object) {
-      this.scope_ = scope_.toString;
+    if (data.hasKey("Scope")) {
+      this.scope_ = data["Scope"].toString;
     }
   }
 }
