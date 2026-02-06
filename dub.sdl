@@ -14,6 +14,7 @@ targetName "uim-clouds"
 dependency "uim-framework" version="~>26.2.1"
 
 // Internal Dependencies
+dependency ":azure" version="*"
 dependency ":docker" version="*"
 dependency ":kubernetes" version="*"
 dependency ":lxc" version="*"
@@ -24,6 +25,7 @@ dependency ":podman" version="*"
 sourceFiles "./source/uim/clouds.d"
 
 // Subpackages
+subPackage "azure"
 subPackage "docker"
 subPackage "kubernetes"
 subPackage "lxc"
