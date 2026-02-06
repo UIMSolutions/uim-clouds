@@ -29,3 +29,4 @@ numerical/numerical-test-default
 compilers/compilers-test-default
 uim-framework-test-library
 uim-framework-test-library
+podman/podman-test-default
