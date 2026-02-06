@@ -144,7 +144,7 @@ struct Network {
   string id;
   string name;
   string driver;
-  string scope;
+  string scope_;
   string ipam;
 
   this(Json data) {
@@ -157,8 +157,8 @@ struct Network {
     if (auto driver = "Driver" in data.object) {
       this.driver = driver.toString;
     }
-    if (auto scope = "Scope" in data.object) {
-      this.scope = scope.toString;
+    if (auto scope_ = "Scope" in data.object) {
+      this.scope_ = scope_.toString;
     }
   }
 }

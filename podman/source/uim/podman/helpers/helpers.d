@@ -3,31 +3,13 @@
 * License: Subject to the terms of the Apache 2.0 license, as written in the included LICENSE.txt file.
 * Authors: Ozan Nurettin Süel (aka UIManufaktur)
 *****************************************************************************************************************/
-module uim.podman.helpers;
+module uim.podman.helpers.helpers;
 
 import uim.podman;
 
 @safe:
 
-/// Creates a container config for a simple image run.
-Json createContainerConfig(string image, string[] cmd = [], string[] env = []) {
-  Json[] cmdArray;
-  foreach (c; cmd) {
-    cmdArray ~= Json(c);
-  }
 
-  Json[] envArray;
-  foreach (e; env) {
-    envArray ~= Json(e);
-  }
-
-  Json config = Json([
-    "Image": Json(image),
-    "Cmd": Json(cmdArray),
-    "Env": Json(envArray)
-  ]);
-  return config;
-}
 
 /// Creates port bindings for container.
 Json createPortBindings(string[string] portMap) {
@@ -55,14 +37,7 @@ Json createVolumeMounts(string[string] mounts) {
   return Json(volumeList);
 }
 
-/// Creates environment variables array from key-value pairs.
-Json createEnvironment(string[string] envMap) {
-  Json[] envArray;
-  foreach (key, value; envMap) {
-    envArray ~= Json(key ~ "=" ~ value);
-  }
-  return Json(envArray);
-}
+
 
 /// Creates a pod config for a simple pod creation.
 Json createPodConfig(string name, string[] portBindings = []) {
@@ -83,24 +58,7 @@ Json createPodConfig(string name, string[] portBindings = []) {
   return config;
 }
 
-/// Creates network settings for container.
-Json createNetworkSettings(string networkName, string ipAddress = "", string gateway = "") {
-  Json settings = Json([
-    "EndpointsConfig": Json([
-      networkName: Json([
-        "IPAMConfig": Json(Json(null))
-      ])
-    ])
-  ]);
-  
-  if (ipAddress.length > 0) {
-    settings["EndpointsConfig"][networkName]["IPAMConfig"] = Json([
-      "IPv4Address": Json(ipAddress)
-    ]);
-  }
-  
-  return settings;
-}
+
 
 /// Converts string array to Json array.
 Json stringArrayToJSON(string[] array) {

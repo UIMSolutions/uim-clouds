@@ -11,9 +11,7 @@ targetName "uim-podman"
 targetType "library"
 
 // Dependencies
-dependency "uim-framework:oop" version="*"
-dependency "uim-framework:logging" version="*"
-dependency "vibe-d" version="~>0.10.3"
+dependency "uim-framework" version="*"
 
 // Configurations
 configuration "default" {

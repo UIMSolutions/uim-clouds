@@ -6,8 +6,16 @@
 module uim.podman;
 
 public {
-  import uim.core;
+  import uim.oop;
+}
 
+public {
+  import uim.podman.classes;
+  import uim.podman.helpers;
+  import uim.podman.interfaces;
+}
+
+public {
   import uim.podman.config;
   import uim.podman.resources;
   import uim.podman.client;
