@@ -1,2 +1,2 @@
-module uim.azure.classes;
+module uim.gdc.classes;
 
