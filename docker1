@@ -1,0 +1,27 @@
+FROM ubuntu:24.04
+
+# Basis-Tools
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    gcc \
+    make \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# DMD + DUB installieren
+RUN wget https://dlang.org/install.sh -O install.sh && \
+    bash install.sh dmd && \
+    rm install.sh
+
+# DMD in PATH bringen
+ENV PATH="/root/dlang/dmd-*/bin:${PATH}"
+
+# Optional: vibe.d global vorbereiten (beschleunigt Builds)
+RUN dub fetch vibe-d && dub build vibe-d
+
+# Arbeitsverzeichnis
+WORKDIR /app
+
+# Standardbefehl
+CMD ["bash"]
